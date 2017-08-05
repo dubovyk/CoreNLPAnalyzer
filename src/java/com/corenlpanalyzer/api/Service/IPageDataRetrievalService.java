@@ -1,6 +1,7 @@
 package com.corenlpanalyzer.api.Service;
 
 import com.corenlpanalyzer.api.Domain.RawPageData;
+import com.corenlpanalyzer.api.Utils.RemoteAPIException;
 
 /**
  * This interface defines a service which is
@@ -11,5 +12,5 @@ public interface IPageDataRetrievalService {
      * @param targetURL A link to the page data about which is to be received
      * @return An instance of RawPageData with info about the page.
      */
-    RawPageData getPageData(String targetURL);
+    RawPageData getPageData(String targetURL) throws RemoteAPIException;
 }
