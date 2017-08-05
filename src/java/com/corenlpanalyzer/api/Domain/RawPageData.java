@@ -1,5 +1,7 @@
 package com.corenlpanalyzer.api.Domain;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,8 +18,14 @@ public class RawPageData {
     private String titleImageLink;
     private Map<String, String> metadata;
     private Map<String, String> headers;
+    private List<String> links;
     private String website;
-    private List links;
+
+    public RawPageData(){
+        metadata = new HashMap<>();
+        headers = new HashMap<>();
+        links = new ArrayList<>();
+    }
 
     public String getUrl() {
         return url;
@@ -87,7 +95,7 @@ public class RawPageData {
         return links;
     }
 
-    public void setLinks(List links) {
+    public void setLinks(List<String> links) {
         this.links = links;
     }
 
@@ -97,5 +105,9 @@ public class RawPageData {
 
     public void addHeader(String key, String value){
         headers.put(key, value);
+    }
+
+    public void addLink(String url){
+        links.add(url);
     }
 }

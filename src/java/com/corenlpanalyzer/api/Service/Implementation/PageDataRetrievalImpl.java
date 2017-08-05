@@ -3,20 +3,15 @@ package com.corenlpanalyzer.api.Service.Implementation;
 import com.corenlpanalyzer.api.Domain.RawPageData;
 import com.corenlpanalyzer.api.Service.IPageDataRetrievalService;
 import com.corenlpanalyzer.api.Utils.RemoteAPIException;
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,16 +54,108 @@ public class PageDataRetrievalImpl implements IPageDataRetrievalService {
      */
     @Override
     public RawPageData getPageData(String targetURL) throws RemoteAPIException{
-        String data = downloadPage(targetURL);
-
-        JSONObject obj = new JSONObject(data);
-        JSONObject result = (JSONObject)obj.getJSONArray("result").get(0);
-        System.out.println(result.get("body").toString());
+        // Object for the data
         RawPageData rawPageData = new RawPageData();
 
-        rawPageData.setStatus(obj.getString("status"));
-        rawPageData.setBodyText(result.get("body").toString());
+        // Receive data from the remote API, if failed
+        // return null value, which is then filtered.
+        String data;
+        try {
+            data = downloadPage(targetURL);
+        } catch (RemoteAPIException ex){
+            ex.printStackTrace();
+            return null;
+        }
 
+        // Parse string response body into JSONObject, which
+        // provides convenient access to object`s fields.
+        JSONObject obj = new JSONObject(data);
+        JSONObject result = (JSONObject)obj.getJSONArray("result").get(0);
+
+        // get response`s status
+        try {
+            rawPageData.setStatus(obj.getString("status"));
+        } catch (Exception ex){
+            rawPageData.setStatus(null);
+            ex.printStackTrace();
+        }
+
+        // get page`s body text
+        try {
+            rawPageData.setBodyText(result.get("body").toString());
+        } catch (Exception ex){
+            rawPageData.setBodyText(null);
+            ex.printStackTrace();
+        }
+
+        // get link to the title image
+        try {
+            rawPageData.setTitleImageLink(result.get("titleImage").toString());
+        } catch (Exception ex){
+            rawPageData.setBodyText(null);
+            ex.printStackTrace();
+        }
+
+        // for each item in the metadata add it to the metadata map in the
+        // RawPageData instance
+        try {
+            JSONArray metadata = result.getJSONArray("metadata");
+            for(int i = 0; i < metadata.length(); i++){
+                try {
+                    JSONObject entry = metadata.getJSONObject(i);
+                    rawPageData.addMetadata(entry.getString("name"), entry.getString("content"));
+                } catch (Exception ex){
+                    ex.printStackTrace();
+                }
+            }
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+        // get the actual link to the page
+        try {
+            rawPageData.setUrl(result.getString("website"));
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+        // get page`s title
+        try {
+            rawPageData.setTitle(result.getString("title"));
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+        // get all links in the body part of the page
+        try {
+            JSONArray links = result.getJSONArray("links");
+            for(int i = 0; i < links.length(); i++){
+                try {
+                    rawPageData.addLink(links.getString(i));
+                } catch (Exception ex){
+                    ex.printStackTrace();
+                }
+            }
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+        // get all hN tags` content
+        try {
+            JSONArray headers = result.getJSONArray("headers");
+            for(int i = 0; i < headers.length(); i++){
+                try {
+                    JSONObject entry = headers.getJSONObject(i);
+                    rawPageData.addMetadata(entry.getString("header"), entry.getString("text"));
+                } catch (Exception ex){
+                    ex.printStackTrace();
+                }
+            }
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+        // finally, return the complete object
         return rawPageData;
     }
 }
