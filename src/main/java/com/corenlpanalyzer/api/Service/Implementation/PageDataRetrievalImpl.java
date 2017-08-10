@@ -90,7 +90,9 @@ public class PageDataRetrievalImpl implements IPageDataRetrievalService {
 
         // get link to the title image
         try {
-            rawPageData.setTitleImageLink(result.get("titleImage").toString());
+            if (result.has("titleImage")){
+                rawPageData.setTitleImageLink(result.get("titleImage").toString());
+            }
         } catch (Exception ex){
             rawPageData.setBodyText(null);
             ex.printStackTrace();
@@ -99,13 +101,15 @@ public class PageDataRetrievalImpl implements IPageDataRetrievalService {
         // for each item in the metadata add it to the metadata map in the
         // RawPageData instance
         try {
-            JSONArray metadata = result.getJSONArray("metadata");
-            for(int i = 0; i < metadata.length(); i++){
-                try {
-                    JSONObject entry = metadata.getJSONObject(i);
-                    rawPageData.addMetadata(entry.getString("name"), entry.getString("content"));
-                } catch (Exception ex){
-                    ex.printStackTrace();
+            if (result.has("metadata")){
+                JSONArray metadata = result.getJSONArray("metadata");
+                for(int i = 0; i < metadata.length(); i++){
+                    try {
+                        JSONObject entry = metadata.getJSONObject(i);
+                        rawPageData.addMetadata(entry.getString("name"), entry.getString("content"));
+                    } catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                 }
             }
         } catch (Exception ex){
@@ -128,12 +132,14 @@ public class PageDataRetrievalImpl implements IPageDataRetrievalService {
 
         // get all links in the body part of the page
         try {
-            JSONArray links = result.getJSONArray("links");
-            for(int i = 0; i < links.length(); i++){
-                try {
-                    rawPageData.addLink(links.getString(i));
-                } catch (Exception ex){
-                    ex.printStackTrace();
+            if (result.has("links")){
+                JSONArray links = result.getJSONArray("links");
+                for(int i = 0; i < links.length(); i++){
+                    try {
+                        rawPageData.addLink(links.getString(i));
+                    } catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                 }
             }
         } catch (Exception ex){
@@ -142,13 +148,15 @@ public class PageDataRetrievalImpl implements IPageDataRetrievalService {
 
         // get all hN tags` content
         try {
-            JSONArray headers = result.getJSONArray("headers");
-            for(int i = 0; i < headers.length(); i++){
-                try {
-                    JSONObject entry = headers.getJSONObject(i);
-                    rawPageData.addMetadata(entry.getString("header"), entry.getString("text"));
-                } catch (Exception ex){
-                    ex.printStackTrace();
+            if (result.has("headers")){
+                JSONArray headers = result.getJSONArray("headers");
+                for(int i = 0; i < headers.length(); i++){
+                    try {
+                        JSONObject entry = headers.getJSONObject(i);
+                        rawPageData.addMetadata(entry.getString("header"), entry.getString("text"));
+                    } catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                 }
             }
         } catch (Exception ex){
