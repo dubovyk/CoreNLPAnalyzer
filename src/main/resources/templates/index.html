@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>CoreNLP analyzer</title>
+
+    <link rel="icon" type="img/png" href="img/nlp-api-logo.png"/>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="css/main.css" rel="stylesheet"/>
+    <link href="css/sticky-footer.css" rel="stylesheet"/>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="jumbotron">
+      <div class="container">
+        <h1>CoreNLP analytics!</h1>
+        <p>This is a demo page for testing of the web-pages and raw text analysis.</p>
+        <!--<p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more »</a></p>-->
+      </div>
+    </div>
+    <div class="row">
+      <div class="container">
+      <div class="col-md-4">
+        <form action="/index_raw" method="post">
+          <fieldset>
+            <legend>Page analysis:</legend>
+            Page url:<br/>
+            <input type="text" name="url" placeholder="http://wwww.example.com"/><br/><br/>
+            <input type="submit" value="Submit"/>
+          </fieldset>
+        </form>
+        <br/><br/>
+        <form id="raw_form" action="/index_raw" method="post">
+          <fieldset>
+            <legend>Text analysis:</legend>
+            Raw text:<br/>
+            <textarea rows="4" name="raw_text" form="raw_form" placeholder="Enter text here..."></textarea><br/><br/>
+            <input type="submit" value="Submit"/>
+          </fieldset>
+        </form>        
+      </div>
+      <div class="col-md-8" style="'visibility:' + ${visible}">
+        <p><b>Original text</b>:</p>
+          <p th:text="${text}" />
+        <hr/>
+        <p><b>Parse tree</b>:</p>
+          <p th:text="${parse_tree}" />
+        <p><b>Coreference chains</b>:</p>
+          <p th:remove="tag" th:utext="${coref_chains}" />
+        <p><b>Total sentiment coefficient</b>:</p>
+          <p th:text="${sentiment}" />
+        <p><b>Total words number</b>:</p>
+          <p th:text="${word_num}" />
+        <p><b>Total sentences number</b>:</p>
+          <p th:text="${sentence_num}" />
+        <p><b>Average words per sentence</b>:</p>
+          <p th:text="${words_sentence}" />
+      </div>
+      </div>
+    </div>
+    
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted">All rights reserved. (c) 2017</p>
+      </div>
+    </footer>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+  </body>
+</html>

@@ -1,11 +1,16 @@
 package com.corenlpanalyzer.api.Domain;
 
+import edu.stanford.nlp.coref.data.CorefChain;
+
+import java.util.Collection;
+
 public class AnalysisResult {
     private String targetText;
     private double bodyEmotionsCoefficient;
     private String parseTree;
     private int wordCount, sentenceCount;
     private float wordsPerSentence;
+    private Collection<CorefChain> corefChains;
 
     public AnalysisResult() {
     }
@@ -70,5 +75,21 @@ public class AnalysisResult {
 
     public void setBodyEmotionsCoefficient(double bodyEmotionsCoefficient) {
         this.bodyEmotionsCoefficient = bodyEmotionsCoefficient;
+    }
+
+    public Collection<CorefChain> getCorefChains() {
+        return corefChains;
+    }
+
+    public void setCorefChains(Collection<CorefChain> corefChains) {
+        this.corefChains = corefChains;
+    }
+
+    public String corefChainsListToString(){
+        StringBuilder builder = new StringBuilder();
+        for(CorefChain c : corefChains) {
+            builder.append(c).append("<br>");
+        }
+        return builder.toString();
     }
 }

@@ -4,6 +4,9 @@ import com.corenlpanalyzer.api.Domain.AnalysisResult;
 import com.corenlpanalyzer.api.Domain.RawPageData;
 import com.corenlpanalyzer.api.Service.ICoreNLPAnalyzerService;
 import com.corenlpanalyzer.api.Service.IPageDataRetrievalService;
+import edu.stanford.nlp.coref.CorefCoreAnnotations;
+import edu.stanford.nlp.coref.data.CorefChain;
+import edu.stanford.nlp.coref.data.Mention;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
@@ -34,7 +37,7 @@ public class CoreNLPAnalyzerServiceImpl implements ICoreNLPAnalyzerService {
         this.pageDataRetrievalService = pageDataRetrievalService;
 
         Properties properties = new Properties();
-        properties.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner, parse, dcoref, sentiment");
+        properties.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner, parse,mention, coref, sentiment");
         properties.setProperty("outputFormat", "json");
         this.pipeline = new StanfordCoreNLP(properties);
     }
@@ -89,7 +92,10 @@ public class CoreNLPAnalyzerServiceImpl implements ICoreNLPAnalyzerService {
                 longest = part.length();
                 main_sentiment = sentiment;
             }
+
         }
+
+        result.setCorefChains(doc.get(CorefCoreAnnotations.CorefChainAnnotation.class).values());
 
         result.setWordCount(words);
         result.setSentenceCount(sentences_num);
