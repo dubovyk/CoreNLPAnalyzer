@@ -17,7 +17,6 @@ public interface ICoreNLPAnalyzerService {
     }
 
     default AnalysisResult score(String rawText){
-        System.out.println("Default one");
         return new AnalysisResult();
     }
 }

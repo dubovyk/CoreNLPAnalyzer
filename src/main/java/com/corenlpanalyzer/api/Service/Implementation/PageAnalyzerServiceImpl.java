@@ -1,6 +1,5 @@
 package com.corenlpanalyzer.api.Service.Implementation;
 
-import com.corenlpanalyzer.api.Domain.AnalysisResult;
 import com.corenlpanalyzer.api.Domain.PageAnalysisResult;
 import com.corenlpanalyzer.api.Domain.RawPageData;
 import com.corenlpanalyzer.api.Service.ICoreNLPAnalyzerService;
@@ -35,14 +34,24 @@ public class PageAnalyzerServiceImpl implements IPageAnalyzerService{
             }
         }
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder metaText = new StringBuilder();
         for(String k : data.getMetadata().values()){
-            buffer.append(k).append(".\n");
+            metaText.append(k).append(".\n");
         }
+
+        StringBuilder wholePageText = new StringBuilder();
+        wholePageText
+                .append(data.getTitle())
+                .append("\n")
+                .append(metaText.toString())
+                .append("\n")
+                .append(data.getBodyText());
+
         PageAnalysisResult analysisResult = new PageAnalysisResult();
         analysisResult.setBodyAnalysisResult(coreNLPAnalyzerService.score(data.getBodyText()));
         analysisResult.setTitleAnalysisResult(coreNLPAnalyzerService.score(data.getTitle()));
-        analysisResult.setMetaAnalysisResult(coreNLPAnalyzerService.score(buffer.toString()));
+        analysisResult.setMetaAnalysisResult(coreNLPAnalyzerService.score(metaText.toString()));
+        analysisResult.setWholePageAnalysisResult(coreNLPAnalyzerService.score(wholePageText.toString()));
         return analysisResult;
     }
 }

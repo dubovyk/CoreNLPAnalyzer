@@ -1,6 +1,5 @@
 package com.corenlpanalyzer.api.Service;
 
-import com.corenlpanalyzer.api.Domain.AnalysisResult;
 import com.corenlpanalyzer.api.Domain.PageAnalysisResult;
 
 public interface IPageAnalyzerService {

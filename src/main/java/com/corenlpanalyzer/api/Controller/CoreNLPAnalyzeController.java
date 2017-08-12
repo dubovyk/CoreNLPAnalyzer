@@ -7,6 +7,8 @@ import com.corenlpanalyzer.api.Service.IPageAnalyzerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,6 +41,7 @@ public class CoreNLPAnalyzeController {
     public @ResponseBody PageAnalysisResult response(@RequestParam String targetURL){
         PageAnalysisResult result = pageAnalyzerService.score(targetURL);
         if (result != null){
+
             return result;
         } else {
             return null;
@@ -53,7 +56,9 @@ public class CoreNLPAnalyzeController {
     }
 
     @GetMapping("/echo")
-    public @ResponseBody String echo(@RequestParam(defaultValue="Hello World!") String message){
-        return message;
+    public @ResponseBody String echo(){
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        return sdf.format(date);
     }
 }
