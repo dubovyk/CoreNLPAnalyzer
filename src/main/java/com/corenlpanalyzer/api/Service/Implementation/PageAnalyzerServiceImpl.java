@@ -1,6 +1,7 @@
 package com.corenlpanalyzer.api.Service.Implementation;
 
 import com.corenlpanalyzer.api.Domain.AnalysisResult;
+import com.corenlpanalyzer.api.Domain.PageAnalysisResult;
 import com.corenlpanalyzer.api.Domain.RawPageData;
 import com.corenlpanalyzer.api.Service.ICoreNLPAnalyzerService;
 import com.corenlpanalyzer.api.Service.IPageAnalyzerService;
@@ -21,7 +22,7 @@ public class PageAnalyzerServiceImpl implements IPageAnalyzerService{
     }
 
     @Override
-    public AnalysisResult score(String targetURL) {
+    public PageAnalysisResult score(String targetURL) {
         RawPageData data;
 
         try {
@@ -34,8 +35,14 @@ public class PageAnalyzerServiceImpl implements IPageAnalyzerService{
             }
         }
 
-        AnalysisResult result = coreNLPAnalyzerService.score(data);
-
-        return result;
+        StringBuffer buffer = new StringBuffer();
+        for(String k : data.getMetadata().values()){
+            buffer.append(k).append(".\n");
+        }
+        PageAnalysisResult analysisResult = new PageAnalysisResult();
+        analysisResult.setBodyAnalysisResult(coreNLPAnalyzerService.score(data.getBodyText()));
+        analysisResult.setTitleAnalysisResult(coreNLPAnalyzerService.score(data.getTitle()));
+        analysisResult.setMetaAnalysisResult(coreNLPAnalyzerService.score(buffer.toString()));
+        return analysisResult;
     }
 }

@@ -1,6 +1,7 @@
 package com.corenlpanalyzer.api.Controller;
 
 import com.corenlpanalyzer.api.Domain.AnalysisResult;
+import com.corenlpanalyzer.api.Domain.PageAnalysisResult;
 import com.corenlpanalyzer.api.Service.ICoreNLPAnalyzerService;
 import com.corenlpanalyzer.api.Service.IPageAnalyzerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,8 @@ public class CoreNLPAnalyzeController {
      * @return A JSON-ed AnalysisResult instance with analysis data.
      */
     @GetMapping(path = "/url_analyze")
-    public @ResponseBody AnalysisResult response(@RequestParam String targetURL){
-        AnalysisResult result = pageAnalyzerService.score(targetURL);
+    public @ResponseBody PageAnalysisResult response(@RequestParam String targetURL){
+        PageAnalysisResult result = pageAnalyzerService.score(targetURL);
         if (result != null){
             return result;
         } else {
