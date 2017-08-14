@@ -1,12 +1,22 @@
 package com.corenlpanalyzer.api.Domain;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
 import edu.stanford.nlp.coref.data.CorefChain;
 
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class AnalysisResult {
+public class AnalysisResult{
     private String targetText;
     private double bodyEmotionsCoefficient;
     private String parseTree;
@@ -14,6 +24,7 @@ public class AnalysisResult {
     private float wordsPerSentence;
     private Collection<CorefChain> corefChains;
     private Map<String, List<String>> NERentities;
+    private List<List<String[]>> corefChainsList;
 
     public AnalysisResult() {
     }
@@ -88,7 +99,7 @@ public class AnalysisResult {
         this.bodyEmotionsCoefficient = bodyEmotionsCoefficient;
     }
 
-    public Collection<CorefChain> getCorefChains() {
+    private Collection<CorefChain> getCorefChains() {
         return corefChains;
     }
 
@@ -118,5 +129,20 @@ public class AnalysisResult {
             }
         }
         return buffer.toString();
+    }
+
+    public List<List<String[]>> getCorefChainsList() {
+        List<List<String[]>> result = new ArrayList<>();
+        for(CorefChain c : corefChains) {
+            List<String[]> chain = new ArrayList<>();
+            for (CorefChain.CorefMention mention: c.getMentionsInTextualOrder()){
+                String[] arr = new String[2];
+                arr[0] = String.valueOf(mention.sentNum);
+                arr[1] = mention.mentionSpan;
+                chain.add(arr);
+            }
+            result.add(chain);
+        }
+        return result;
     }
 }

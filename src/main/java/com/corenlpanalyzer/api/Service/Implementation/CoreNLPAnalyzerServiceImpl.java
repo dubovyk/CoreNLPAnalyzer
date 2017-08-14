@@ -88,8 +88,10 @@ public class CoreNLPAnalyzerServiceImpl implements ICoreNLPAnalyzerService {
             total_sentiment += getTypeOfEmotion(sentence.get(SentimentCoreAnnotations.SentimentClass.class)).getValue();
             for (CoreLabel token : sentence.get(CoreAnnotations.TokensAnnotation.class)){
                 if ((token.value() != null)
-                    && (token.get(CoreAnnotations.NamedEntityTagAnnotation.class) != null)){
+                    && (token.get(CoreAnnotations.NamedEntityTagAnnotation.class) != null)
+                    && !token.get(CoreAnnotations.NamedEntityTagAnnotation.class).equals("O")){
                     NERtags.computeIfAbsent(token.get(CoreAnnotations.NamedEntityTagAnnotation.class), k -> new ArrayList<>());
+
                     if (!NERtags.get(token.get(CoreAnnotations.NamedEntityTagAnnotation.class)).contains(token.value())){
                         NERtags.get(token.get(CoreAnnotations.NamedEntityTagAnnotation.class)).add(token.value());
                     }
