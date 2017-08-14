@@ -7,10 +7,9 @@ import com.corenlpanalyzer.api.Service.IPageAnalyzerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class defines all API endpoints directly related
@@ -49,10 +48,17 @@ public class CoreNLPAnalyzeController {
     }
 
     @PostMapping(path = "/raw_analyze")
-    public @ResponseBody AnalysisResult analyze(@RequestBody Map<String, String> data){
-        AnalysisResult result = rawAnalyzerService.score(data.get("text"));
+    public @ResponseBody List<AnalysisResult> analyze(@RequestBody Map<String, Object> data){
+        List<AnalysisResult> results = new ArrayList<>();
 
-        return result;
+        try {
+            for (String text : (List<String>)data.get("text")){
+                results.add(rawAnalyzerService.score(text));
+            }
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return results;
     }
 
     @GetMapping("/echo")
