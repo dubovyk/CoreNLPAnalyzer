@@ -22,7 +22,7 @@ public class AnalysisResult{
     private String parseTree;
     private int wordCount, sentenceCount;
     private float wordsPerSentence;
-    private Collection<CorefChain> corefChains;
+    private List<CorefChain> corefChains;
     private Map<String, List<String>> NERentities;
     private List<List<String[]>> corefChainsList;
 
@@ -99,11 +99,11 @@ public class AnalysisResult{
         this.bodyEmotionsCoefficient = bodyEmotionsCoefficient;
     }
 
-    private Collection<CorefChain> getCorefChains() {
+    private List<CorefChain> getCorefChains() {
         return corefChains;
     }
 
-    public void setCorefChains(Collection<CorefChain> corefChains) {
+    public void setCorefChains(List<CorefChain> corefChains) {
         this.corefChains = corefChains;
     }
 

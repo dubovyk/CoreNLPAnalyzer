@@ -6,6 +6,7 @@ import com.corenlpanalyzer.api.Domain.SentimentValuesEnum;
 import com.corenlpanalyzer.api.Service.ICoreNLPAnalyzerService;
 import com.corenlpanalyzer.api.Service.IPageDataRetrievalService;
 import edu.stanford.nlp.coref.CorefCoreAnnotations;
+import edu.stanford.nlp.coref.data.CorefChain;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.Annotation;
@@ -121,7 +122,8 @@ public class CoreNLPAnalyzerServiceImpl implements ICoreNLPAnalyzerService {
             }
         }
 
-        result.setCorefChains(doc.get(CorefCoreAnnotations.CorefChainAnnotation.class).values());
+        List<CorefChain> chains = getCorefChains(doc);
+        result.setCorefChains(chains);
 
         result.setWordCount(words);
         result.setSentenceCount(sentences_num);
@@ -130,6 +132,12 @@ public class CoreNLPAnalyzerServiceImpl implements ICoreNLPAnalyzerService {
 
         result.setNERentities(NERtags);
         return result;
+    }
+
+    private List<CorefChain> getCorefChains(Annotation doc){
+        List<CorefChain> chains = new ArrayList<>(doc.get(CorefCoreAnnotations.CorefChainAnnotation.class).values());
+        chains.sort((o1, o2) -> o2.getMentionsInTextualOrder().size() - o1.getMentionsInTextualOrder().size());
+        return chains;
     }
 
     private SentimentValuesEnum getTypeOfEmotion(String type){
