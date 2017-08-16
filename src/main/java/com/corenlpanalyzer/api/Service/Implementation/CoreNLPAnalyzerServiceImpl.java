@@ -79,6 +79,9 @@ public class CoreNLPAnalyzerServiceImpl implements ICoreNLPAnalyzerService {
             return result;
         }
 
+        String nerClass = "";
+        StringBuffer ner;
+
         for (CoreMap sentence : sentences){
             Tree tree = sentence.get(TreeCoreAnnotations.TreeAnnotation.class);
             result.appendParseTree(tree.toString().replace("null", ""));
@@ -86,14 +89,33 @@ public class CoreNLPAnalyzerServiceImpl implements ICoreNLPAnalyzerService {
             words += s.length();
             sentences_num += 1;
             total_sentiment += getTypeOfEmotion(sentence.get(SentimentCoreAnnotations.SentimentClass.class)).getValue();
+            ner = new StringBuffer();
+
+
             for (CoreLabel token : sentence.get(CoreAnnotations.TokensAnnotation.class)){
                 if ((token.value() != null)
-                    && (token.get(CoreAnnotations.NamedEntityTagAnnotation.class) != null)
-                    && !token.get(CoreAnnotations.NamedEntityTagAnnotation.class).equals("O")){
-                    NERtags.computeIfAbsent(token.get(CoreAnnotations.NamedEntityTagAnnotation.class), k -> new ArrayList<>());
+                    && (token.get(CoreAnnotations.NamedEntityTagAnnotation.class) != null)){
+                    if (!token.get(CoreAnnotations.NamedEntityTagAnnotation.class).equals("O")){
+                        NERtags.computeIfAbsent(token.get(CoreAnnotations.NamedEntityTagAnnotation.class), k -> new ArrayList<>());
 
-                    if (!NERtags.get(token.get(CoreAnnotations.NamedEntityTagAnnotation.class)).contains(token.value())){
-                        NERtags.get(token.get(CoreAnnotations.NamedEntityTagAnnotation.class)).add(token.value());
+                        if (!NERtags.get(token.get(CoreAnnotations.NamedEntityTagAnnotation.class)).contains(token.value())){
+                            if (nerClass.equals(token.get(CoreAnnotations.NamedEntityTagAnnotation.class))){
+                                ner.append(token.value()).append(" ");
+                            } else {
+                                if (NERtags.keySet().contains(nerClass) && !ner.toString().equals("")){
+                                    NERtags.get(nerClass).add(ner.toString().trim());
+                                }
+                                nerClass = token.get(CoreAnnotations.NamedEntityTagAnnotation.class);
+                                ner = new StringBuffer();
+                                ner.append(token.value()).append(" ");
+                            }
+                        }
+                    } else {
+                        if (!ner.toString().equals("")){
+                            NERtags.get(nerClass).add(ner.toString().trim());
+                            ner = new StringBuffer();
+                        }
+                        nerClass = token.get(CoreAnnotations.NamedEntityTagAnnotation.class);
                     }
                 }
             }
