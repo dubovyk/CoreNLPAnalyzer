@@ -2,6 +2,8 @@ package com.corenlpanalyzer.api.Controller;
 
 import com.corenlpanalyzer.api.Domain.AnalysisResult;
 import com.corenlpanalyzer.api.Domain.PageAnalysisResult;
+import com.corenlpanalyzer.api.Runnables.ICoreNLPAnalyzer;
+import com.corenlpanalyzer.api.Runnables.Implementation.CoreNLPAnalyzer;
 import com.corenlpanalyzer.api.Service.ICoreNLPAnalyzerService;
 import com.corenlpanalyzer.api.Service.IPageAnalyzerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +89,18 @@ public class FrontEndController {
             model.addAttribute("ner_organization", resultPage.getWholePageAnalysisResult().getNamedEntititesAsString("ORGANIZATION"));
             model.addAttribute("ner_misc", resultPage.getWholePageAnalysisResult().getNamedEntititesAsString("MISC"));
         } else if (text != null){
-            resultText = coreNLPAnalyzerService.score(text);
+
+            ICoreNLPAnalyzer analyzer = coreNLPAnalyzerService.getAnalyzer(text);
+
+            Thread thread = new Thread(analyzer);
+            thread.start();
+            try {
+                thread.join();
+            } catch (InterruptedException ignored){
+            }
+
+            coreNLPAnalyzerService.pushAnalyzer(analyzer.getAnnotator());
+            resultText = analyzer.getResult();
             model.addAttribute("whole", 1);
             model.addAttribute("visible", "visibility: visible;");
             model.addAttribute("text", resultText.getTargetText());

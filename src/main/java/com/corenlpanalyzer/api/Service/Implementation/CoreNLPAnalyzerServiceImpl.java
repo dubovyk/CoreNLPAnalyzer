@@ -3,6 +3,8 @@ package com.corenlpanalyzer.api.Service.Implementation;
 import com.corenlpanalyzer.api.Domain.AnalysisResult;
 import com.corenlpanalyzer.api.Domain.RawPageData;
 import com.corenlpanalyzer.api.Domain.SentimentValuesEnum;
+import com.corenlpanalyzer.api.Runnables.ICoreNLPAnalyzer;
+import com.corenlpanalyzer.api.Runnables.Implementation.CoreNLPAnalyzer;
 import com.corenlpanalyzer.api.Service.ICoreNLPAnalyzerService;
 import com.corenlpanalyzer.api.Service.IPageDataRetrievalService;
 import edu.stanford.nlp.coref.CorefCoreAnnotations;
@@ -30,15 +32,21 @@ import java.util.*;
 public class CoreNLPAnalyzerServiceImpl implements ICoreNLPAnalyzerService {
     private final IPageDataRetrievalService pageDataRetrievalService;
     private StanfordCoreNLP pipeline;
+    private final Stack<StanfordCoreNLP> pipelineStack;
+    private int THREAD_NUM = 2;
 
     @Autowired
     public CoreNLPAnalyzerServiceImpl(IPageDataRetrievalService pageDataRetrievalService) {
         this.pageDataRetrievalService = pageDataRetrievalService;
+        pipelineStack = new Stack<>();
 
         Properties properties = new Properties();
         properties.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner, parse,mention, coref, sentiment");
         properties.setProperty("outputFormat", "json");
-        this.pipeline = new StanfordCoreNLP(properties);
+
+        for(int i = 0; i < THREAD_NUM; i++){
+            pipelineStack.push(new StanfordCoreNLP(properties));
+        }
     }
 
     /**
@@ -57,100 +65,50 @@ public class CoreNLPAnalyzerServiceImpl implements ICoreNLPAnalyzerService {
 
     @Override
     public AnalysisResult score(String rawText){
-        int words = 0;
-        int sentences_num = 0;
-        int total_sentiment = 0;
-
-        Map<String, List<String>> NERtags = new HashMap<>();
-
-        NERtags.put("PERSON", new ArrayList<>());
-        NERtags.put("LOCATION", new ArrayList<>());
-        NERtags.put("ORGANIZATION", new ArrayList<>());
-        NERtags.put("MISC", new ArrayList<>());
-
-        AnalysisResult result = new AnalysisResult();
-        result.setTargetText(rawText);
-
-        Annotation doc = new Annotation(rawText);
-
-        pipeline.annotate(doc);
-
-        List<CoreMap> sentences = doc.get(CoreAnnotations.SentencesAnnotation.class);
-        if (sentences == null){
-            return result;
+        System.out.println(String.format("Attempting to get annotator."));
+        ICoreNLPAnalyzer analyzer = getAnalyzer(rawText);
+        System.out.println(String.format("Got an annotator now."));
+        analyzer.run();
+        System.out.println(String.format("We have results."));
+        AnalysisResult result = analyzer.getResult();
+        synchronized (pipelineStack){
+            pipelineStack.push(analyzer.getAnnotator());
+            System.out.println(String.format("Pushed back annotator now."));
         }
 
-        String nerClass = "";
-        StringBuffer ner;
-
-        for (CoreMap sentence : sentences){
-            Tree tree = sentence.get(TreeCoreAnnotations.TreeAnnotation.class);
-            result.appendParseTree(tree.toString().replace("null", ""));
-            Sentence s = new Sentence(sentence);
-            words += s.length();
-            sentences_num += 1;
-            total_sentiment += getTypeOfEmotion(sentence.get(SentimentCoreAnnotations.SentimentClass.class)).getValue();
-            ner = new StringBuffer();
-
-
-            for (CoreLabel token : sentence.get(CoreAnnotations.TokensAnnotation.class)){
-                if ((token.value() != null)
-                    && (token.get(CoreAnnotations.NamedEntityTagAnnotation.class) != null)){
-                    if (!token.get(CoreAnnotations.NamedEntityTagAnnotation.class).equals("O")){
-                        NERtags.computeIfAbsent(token.get(CoreAnnotations.NamedEntityTagAnnotation.class), k -> new ArrayList<>());
-
-                        if (!NERtags.get(token.get(CoreAnnotations.NamedEntityTagAnnotation.class)).contains(token.value())){
-                            if (nerClass.equals(token.get(CoreAnnotations.NamedEntityTagAnnotation.class))){
-                                ner.append(token.value()).append(" ");
-                            } else {
-                                if (NERtags.keySet().contains(nerClass) && !ner.toString().equals("")){
-                                    NERtags.get(nerClass).add(ner.toString().trim());
-                                }
-                                nerClass = token.get(CoreAnnotations.NamedEntityTagAnnotation.class);
-                                ner = new StringBuffer();
-                                ner.append(token.value()).append(" ");
-                            }
-                        }
-                    } else {
-                        if (!ner.toString().equals("")){
-                            NERtags.get(nerClass).add(ner.toString().trim());
-                            ner = new StringBuffer();
-                        }
-                        nerClass = token.get(CoreAnnotations.NamedEntityTagAnnotation.class);
-                    }
-                }
-            }
-        }
-
-        List<CorefChain> chains = getCorefChains(doc);
-        result.setCorefChains(chains);
-
-        result.setWordCount(words);
-        result.setSentenceCount(sentences_num);
-        result.setWordsPerSentence((sentences_num > 0) ?(float)words/(float)sentences_num : 0);
-        result.setBodyEmotionsCoefficient((sentences_num > 0) ? ((double) total_sentiment / (double) sentences_num) : 0);
-
-        result.setNERentities(NERtags);
         return result;
     }
 
-    private List<CorefChain> getCorefChains(Annotation doc){
-        List<CorefChain> chains = new ArrayList<>(doc.get(CorefCoreAnnotations.CorefChainAnnotation.class).values());
-        chains.sort((o1, o2) -> o2.getMentionsInTextualOrder().size() - o1.getMentionsInTextualOrder().size());
-        return chains;
+    @Override
+    public ICoreNLPAnalyzer getAnalyzer(String rawText){
+        ICoreNLPAnalyzer analyzer = new CoreNLPAnalyzer();
+        analyzer.setRawText(rawText);
+
+        System.out.println(String.format("%d annotators available", pipelineStack.size()));
+
+        while (pipelineStack.size() == 0){
+            try {
+                wait(100);
+            }catch (InterruptedException ex){
+                ex.printStackTrace();
+            }
+        }
+        System.out.println(String.format("Will return annotator now."));
+        synchronized (pipelineStack){
+            StanfordCoreNLP coreNLP = pipelineStack.pop();
+            analyzer.setAnnotator(coreNLP);
+            System.out.println(String.format("Returned annotator now."));
+        }
+
+
+        return analyzer;
     }
 
-    private SentimentValuesEnum getTypeOfEmotion(String type){
-        if (type.equals("Neutral")){
-            return SentimentValuesEnum.NEGATIVE;
-        } else if (type.equals("Positive")){
-            return SentimentValuesEnum.POSITIVE;
-        } else if (type.equals("Very positive")){
-            return SentimentValuesEnum.VERY_POSITIVE;
-        } else if (type.equals("Negative")){
-            return SentimentValuesEnum.NEGATIVE;
-        } else {
-            return SentimentValuesEnum.VERY_NEGATIVE;
+    @Override
+    public void pushAnalyzer(StanfordCoreNLP coreNLP){
+        synchronized (pipelineStack){
+            pipelineStack.push(coreNLP);
         }
     }
+
 }

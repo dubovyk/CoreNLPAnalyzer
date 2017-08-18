@@ -2,6 +2,8 @@ package com.corenlpanalyzer.api.Service;
 
 import com.corenlpanalyzer.api.Domain.AnalysisResult;
 import com.corenlpanalyzer.api.Domain.RawPageData;
+import com.corenlpanalyzer.api.Runnables.ICoreNLPAnalyzer;
+import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 
 /**
  * This is an interface which defines a service
@@ -19,4 +21,8 @@ public interface ICoreNLPAnalyzerService {
     default AnalysisResult score(String rawText){
         return new AnalysisResult();
     }
+
+    ICoreNLPAnalyzer getAnalyzer(String rawText);
+
+    void pushAnalyzer(StanfordCoreNLP coreNLP);
 }

@@ -7,7 +7,7 @@ public interface IPageAnalyzerService {
      * @param targetURL The link to the page to be analyzed.
      * @return An instance of AnalysisResult with analysis data.
      */
-    default PageAnalysisResult score(String targetURL) {
+    default PageAnalysisResult score(String targetURL){
         return new PageAnalysisResult();
     }
 }
