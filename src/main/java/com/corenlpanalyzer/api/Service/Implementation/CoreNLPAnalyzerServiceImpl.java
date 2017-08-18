@@ -7,6 +7,7 @@ import com.corenlpanalyzer.api.Runnables.ICoreNLPAnalyzer;
 import com.corenlpanalyzer.api.Runnables.Implementation.CoreNLPAnalyzer;
 import com.corenlpanalyzer.api.Service.ICoreNLPAnalyzerService;
 import com.corenlpanalyzer.api.Service.IPageDataRetrievalService;
+import com.corenlpanalyzer.api.Utils.CoreNLPAnalyzerPool;
 import edu.stanford.nlp.coref.CorefCoreAnnotations;
 import edu.stanford.nlp.coref.data.CorefChain;
 import edu.stanford.nlp.ling.CoreAnnotations;
@@ -31,22 +32,11 @@ import java.util.*;
 @Service
 public class CoreNLPAnalyzerServiceImpl implements ICoreNLPAnalyzerService {
     private final IPageDataRetrievalService pageDataRetrievalService;
-    private StanfordCoreNLP pipeline;
-    private final Stack<StanfordCoreNLP> pipelineStack;
     private int THREAD_NUM = 2;
 
     @Autowired
     public CoreNLPAnalyzerServiceImpl(IPageDataRetrievalService pageDataRetrievalService) {
         this.pageDataRetrievalService = pageDataRetrievalService;
-        pipelineStack = new Stack<>();
-
-        Properties properties = new Properties();
-        properties.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner, parse,mention, coref, sentiment");
-        properties.setProperty("outputFormat", "json");
-
-        for(int i = 0; i < THREAD_NUM; i++){
-            pipelineStack.push(new StanfordCoreNLP(properties));
-        }
     }
 
     /**
@@ -71,11 +61,8 @@ public class CoreNLPAnalyzerServiceImpl implements ICoreNLPAnalyzerService {
         analyzer.run();
         System.out.println(String.format("We have results."));
         AnalysisResult result = analyzer.getResult();
-        synchronized (pipelineStack){
-            pipelineStack.push(analyzer.getAnnotator());
-            System.out.println(String.format("Pushed back annotator now."));
-        }
-
+        pushAnalyzer(analyzer.getAnnotator());
+        System.out.println(String.format("Pushed back annotator now."));
         return result;
     }
 
@@ -83,32 +70,11 @@ public class CoreNLPAnalyzerServiceImpl implements ICoreNLPAnalyzerService {
     public ICoreNLPAnalyzer getAnalyzer(String rawText){
         ICoreNLPAnalyzer analyzer = new CoreNLPAnalyzer();
         analyzer.setRawText(rawText);
-
-        System.out.println(String.format("%d annotators available", pipelineStack.size()));
-
-        while (pipelineStack.size() == 0){
-            try {
-                wait(100);
-            }catch (InterruptedException ex){
-                ex.printStackTrace();
-            }
-        }
-        System.out.println(String.format("Will return annotator now."));
-        synchronized (pipelineStack){
-            StanfordCoreNLP coreNLP = pipelineStack.pop();
-            analyzer.setAnnotator(coreNLP);
-            System.out.println(String.format("Returned annotator now."));
-        }
-
-
         return analyzer;
     }
 
     @Override
     public void pushAnalyzer(StanfordCoreNLP coreNLP){
-        synchronized (pipelineStack){
-            pipelineStack.push(coreNLP);
-        }
+        CoreNLPAnalyzerPool.getInstance().pushAnalyzer(coreNLP);
     }
-
 }

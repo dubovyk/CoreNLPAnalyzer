@@ -3,6 +3,8 @@ package com.corenlpanalyzer.api.Runnables.Implementation;
 import com.corenlpanalyzer.api.Domain.AnalysisResult;
 import com.corenlpanalyzer.api.Domain.SentimentValuesEnum;
 import com.corenlpanalyzer.api.Runnables.ICoreNLPAnalyzer;
+import com.corenlpanalyzer.api.Utils.CoreNLPAnalyzerPool;
+import com.corenlpanalyzer.api.Utils.CoreNLPAnnotatorPool;
 import edu.stanford.nlp.coref.CorefCoreAnnotations;
 import edu.stanford.nlp.coref.data.CorefChain;
 import edu.stanford.nlp.ling.CoreAnnotations;
@@ -32,7 +34,11 @@ public class CoreNLPAnalyzer implements ICoreNLPAnalyzer{
 
     @Override
     public void run(){
+        receiveAnnotator();
         analyze();
+        if (this.coreNLP != null){
+            CoreNLPAnnotatorPool.getInstance().pushAnalyzer(this.coreNLP);
+        }
     }
 
     @Override
@@ -48,6 +54,21 @@ public class CoreNLPAnalyzer implements ICoreNLPAnalyzer{
     @Override
     public StanfordCoreNLP getAnnotator(){
         return this.coreNLP;
+    }
+
+    private void receiveAnnotator(){
+        while (coreNLP == null){
+            this.coreNLP = CoreNLPAnnotatorPool.getInstance().getAnnotator();
+            synchronized (this){
+                if (coreNLP == null){
+                    try {
+                        this.wait(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 
     private void analyze(){

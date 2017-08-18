@@ -12,21 +12,30 @@ import com.corenlpanalyzer.api.Utils.RemoteAPIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @SuppressWarnings("Duplicates")
 @Service
 public class PageAnalyzerServiceImpl implements IPageAnalyzerService{
     private final IPageDataRetrievalService pageDataRetrievalService;
     private final ICoreNLPAnalyzerService coreNLPAnalyzerService;
+    private final ExecutorService executor;
+
+    private int THREAD_NUM = 2;
 
     @Autowired
     public PageAnalyzerServiceImpl(IPageDataRetrievalService pageDataRetrievalService, ICoreNLPAnalyzerService coreNLPAnalyzerService) {
         this.pageDataRetrievalService = pageDataRetrievalService;
         this.coreNLPAnalyzerService = coreNLPAnalyzerService;
+        executor = Executors.newFixedThreadPool(THREAD_NUM);
     }
 
     @Override
     public PageAnalysisResult score(String targetURL){
         RawPageData data;
+
+
 
         try {
             data = pageDataRetrievalService.getPageData(targetURL);
@@ -57,6 +66,33 @@ public class PageAnalyzerServiceImpl implements IPageAnalyzerService{
         PageAnalysisResult analysisResult = new PageAnalysisResult();
 
         ICoreNLPAnalyzer metaAnalyzer = coreNLPAnalyzerService.getAnalyzer(metaText.toString());
+        ICoreNLPAnalyzer titleAnalyzer = coreNLPAnalyzerService.getAnalyzer(data.getTitle());
+        ICoreNLPAnalyzer bodyAnalyzer = coreNLPAnalyzerService.getAnalyzer(data.getBodyText());
+        ICoreNLPAnalyzer wholeAnalyzer = coreNLPAnalyzerService.getAnalyzer(wholePageText.toString());
+
+        String[] texts = {data.getTitle(), metaText.toString(), data.getBodyText(), wholePageText.toString()};
+        ICoreNLPAnalyzer[] analyzers = {metaAnalyzer, titleAnalyzer, bodyAnalyzer, wholeAnalyzer};
+        AnalysisResult[] results = new AnalysisResult[4];
+
+        for(int i = 0; i < 4; i++){
+            analyzers[i] = coreNLPAnalyzerService.getAnalyzer(texts[i]);
+            executor.execute(analyzers[i]);
+        }
+        executor.shutdown();
+        while (!executor.isTerminated()){
+
+        }
+
+        for(int i = 0; i < 4; i++){
+            results[i] = analyzers[i].getResult();
+        }
+
+        analysisResult.setTitleAnalysisResult(results[0]);
+        analysisResult.setMetaAnalysisResult(results[1]);
+        analysisResult.setBodyAnalysisResult(results[2]);
+        analysisResult.setWholePageAnalysisResult(results[3]);
+
+        /*ICoreNLPAnalyzer metaAnalyzer = coreNLPAnalyzerService.getAnalyzer(metaText.toString());
         ICoreNLPAnalyzer titleAnalyzer = coreNLPAnalyzerService.getAnalyzer(data.getTitle());
         Thread metaAnalyzerThread = new Thread(metaAnalyzer);
         Thread titleAnalyzerThread = new Thread(titleAnalyzer);
@@ -94,7 +130,7 @@ public class PageAnalyzerServiceImpl implements IPageAnalyzerService{
         }
 
         analysisResult.setBodyAnalysisResult(bodyAnalyzer.getResult());
-        analysisResult.setWholePageAnalysisResult(wholeAnalyzer.getResult());
+        analysisResult.setWholePageAnalysisResult(wholeAnalyzer.getResult());*/
 
         return analysisResult;
     }
