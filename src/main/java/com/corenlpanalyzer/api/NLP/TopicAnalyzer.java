@@ -3,6 +3,8 @@ package com.corenlpanalyzer.api.NLP;
 import cc.mallet.pipe.*;
 import cc.mallet.topics.ParallelTopicModel;
 import cc.mallet.types.*;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 import java.io.File;
 import java.util.*;
@@ -17,10 +19,13 @@ public class TopicAnalyzer{
         // Begin by importing documents from text to feature sequences
         ArrayList<Pipe> pipeList = new ArrayList<>();
 
+        ClassLoader classLoader = getClass().getClassLoader();
+        File stopwords = new File(classLoader.getResource("stopwords.txt").getFile());
+
         // Pipes: lowercase, tokenize, remove stopwords, map to features
         pipeList.add( new CharSequenceLowercase() );
         pipeList.add( new CharSequence2TokenSequence(Pattern.compile("\\p{L}[\\p{L}\\p{P}]+\\p{L}")) );
-        pipeList.add( new TokenSequenceRemoveStopwords(new File("stopwords.txt"), "UTF-8", false, false, false) );
+        pipeList.add( new TokenSequenceRemoveStopwords(stopwords, "UTF-8", false, false, false) );
         pipeList.add( new TokenSequence2FeatureSequence() );
 
         InstanceList instances = new InstanceList (new SerialPipes(pipeList));
@@ -42,7 +47,7 @@ public class TopicAnalyzer{
 
         // Run the model for 50 iterations and stop (this is for testing only,
         //  for real applications, use 1000 to 2000 iterations)
-        model.setNumIterations(50);
+        model.setNumIterations(200);
         model.estimate();
 
         // Show the words and topics in the first instance

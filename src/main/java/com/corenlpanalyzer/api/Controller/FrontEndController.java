@@ -51,7 +51,7 @@ public class FrontEndController {
             model.addAttribute("body_ner_location", resultPage.getBodyAnalysisResult().getNamedEntititesAsString("LOCATION"));
             model.addAttribute("body_ner_organization", resultPage.getBodyAnalysisResult().getNamedEntititesAsString("ORGANIZATION"));
             model.addAttribute("body_ner_misc", resultPage.getBodyAnalysisResult().getNamedEntititesAsString("MISC"));
-
+            model.addAttribute("body_topic_data", resultPage.getBodyAnalysisResult().getTopicExtractionResult().toHtmlString());
 
             model.addAttribute("title_text", resultPage.getTitleAnalysisResult().getTargetText());
             model.addAttribute("title_sentiment", resultPage.getTitleAnalysisResult().getBodyEmotionsCoefficient());
@@ -102,7 +102,7 @@ public class FrontEndController {
 
             coreNLPAnalyzerService.pushAnalyzer(analyzer.getAnnotator());
             resultText = analyzer.getResult();
-            model.addAttribute("whole", 1);
+            model.addAttribute("raw_text", 1);
             model.addAttribute("visible", "visibility: visible;");
             model.addAttribute("text", resultText.getTargetText());
             model.addAttribute("sentiment", resultText.getBodyEmotionsCoefficient());
@@ -115,6 +115,7 @@ public class FrontEndController {
             model.addAttribute("ner_location", resultText.getNamedEntititesAsString("LOCATION"));
             model.addAttribute("ner_organization", resultText.getNamedEntititesAsString("ORGANIZATION"));
             model.addAttribute("ner_misc", resultText.getNamedEntititesAsString("MISC"));
+            model.addAttribute("topic_data", resultText.getTopicExtractionResult().toHtmlString());
         } else {
             model.addAttribute("info", 1);
         }

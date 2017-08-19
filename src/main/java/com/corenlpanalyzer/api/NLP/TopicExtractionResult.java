@@ -64,14 +64,13 @@ public class TopicExtractionResult {
         for(int topic = 0; topic < data.length; topic++){
             buffer.append("TOPIC ")
                     .append(topic)
-                    .append("<br/><hr/>");
+                    .append("<hr/>");
             for(int word = 0; word < data[topic].length; word++){
                 buffer.append(data[topic][word].getWord())
                         .append(" : ")
                         .append(data[topic][word].getWeight())
                         .append("<br/>");
             }
-            buffer.append("<br/>");
         }
         return buffer.toString();
     }

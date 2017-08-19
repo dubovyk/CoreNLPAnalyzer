@@ -20,7 +20,7 @@ import java.util.concurrent.Executors;
 public class PageAnalyzerServiceImpl implements IPageAnalyzerService{
     private final IPageDataRetrievalService pageDataRetrievalService;
     private final ICoreNLPAnalyzerService coreNLPAnalyzerService;
-    private final ExecutorService executor;
+    private ExecutorService executor;
 
     private int THREAD_NUM = 2;
 
@@ -28,7 +28,6 @@ public class PageAnalyzerServiceImpl implements IPageAnalyzerService{
     public PageAnalyzerServiceImpl(IPageDataRetrievalService pageDataRetrievalService, ICoreNLPAnalyzerService coreNLPAnalyzerService) {
         this.pageDataRetrievalService = pageDataRetrievalService;
         this.coreNLPAnalyzerService = coreNLPAnalyzerService;
-        executor = Executors.newFixedThreadPool(THREAD_NUM);
     }
 
     @Override
@@ -72,6 +71,8 @@ public class PageAnalyzerServiceImpl implements IPageAnalyzerService{
         String[] texts = {data.getTitle(), metaText.toString(), data.getBodyText(), wholePageText.toString()};
         ICoreNLPAnalyzer[] analyzers = {metaAnalyzer, titleAnalyzer, bodyAnalyzer, wholeAnalyzer};
         AnalysisResult[] results = new AnalysisResult[4];
+
+        executor = Executors.newFixedThreadPool(THREAD_NUM);
 
         for(int i = 0; i < 4; i++){
             analyzers[i] = coreNLPAnalyzerService.getAnalyzer(texts[i]);
