@@ -2,6 +2,7 @@ package com.corenlpanalyzer.api.Runnables.Implementation;
 
 import com.corenlpanalyzer.api.Domain.AnalysisResult;
 import com.corenlpanalyzer.api.Domain.SentimentValuesEnum;
+import com.corenlpanalyzer.api.NLP.TopicAnalyzer;
 import com.corenlpanalyzer.api.Runnables.ICoreNLPAnalyzer;
 import com.corenlpanalyzer.api.Utils.CoreNLPAnalyzerPool;
 import com.corenlpanalyzer.api.Utils.CoreNLPAnnotatorPool;
@@ -17,6 +18,7 @@ import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.trees.TreeCoreAnnotations;
 import edu.stanford.nlp.util.CoreMap;
 
+
 import java.util.*;
 
 @SuppressWarnings("Duplicates")
@@ -24,6 +26,7 @@ public class CoreNLPAnalyzer implements ICoreNLPAnalyzer{
     private AnalysisResult result;
     private String rawText;
     private StanfordCoreNLP coreNLP;
+    private boolean useLDA;
 
     public CoreNLPAnalyzer(){
     }
@@ -54,6 +57,11 @@ public class CoreNLPAnalyzer implements ICoreNLPAnalyzer{
     @Override
     public StanfordCoreNLP getAnnotator(){
         return this.coreNLP;
+    }
+
+    @Override
+    public void setUseLDA(boolean isSet){
+        this.useLDA = isSet;
     }
 
     private void receiveAnnotator(){
@@ -119,7 +127,10 @@ public class CoreNLPAnalyzer implements ICoreNLPAnalyzer{
                                 ner.append(token.value()).append(" ");
                             } else {
                                 if (NERtags.keySet().contains(nerClass) && !ner.toString().equals("")){
-                                    NERtags.get(nerClass).add(ner.toString().trim());
+                                    if (!(NERtags.get(nerClass) == null) && !NERtags.get(nerClass).contains(ner.toString().trim())){
+                                        NERtags.get(nerClass).add(ner.toString().trim());
+                                        ner = new StringBuffer();
+                                    }
                                 }
                                 nerClass = token.get(CoreAnnotations.NamedEntityTagAnnotation.class);
                                 ner = new StringBuffer();
@@ -128,8 +139,10 @@ public class CoreNLPAnalyzer implements ICoreNLPAnalyzer{
                         }
                     } else {
                         if (!ner.toString().equals("")){
-                            NERtags.get(nerClass).add(ner.toString().trim());
-                            ner = new StringBuffer();
+                            if (!(NERtags.get(nerClass) == null) && !NERtags.get(nerClass).contains(ner.toString().trim())){
+                                NERtags.get(nerClass).add(ner.toString().trim());
+                                ner = new StringBuffer();
+                            }
                         }
                         nerClass = token.get(CoreAnnotations.NamedEntityTagAnnotation.class);
                     }
@@ -139,6 +152,17 @@ public class CoreNLPAnalyzer implements ICoreNLPAnalyzer{
 
         List<CorefChain> chains = getCorefChains(doc);
         result.setCorefChains(chains);
+
+        if (this.useLDA){
+            TopicAnalyzer topicAnalyzer = new TopicAnalyzer();
+
+            try {
+                result.setTopicExtractionResult(topicAnalyzer.analyze(rawText, 5, 5));
+            } catch (Exception ex){
+                ex.printStackTrace();
+                result.setTopicExtractionResult(null);
+            }
+        }
 
         result.setWordCount(words);
         result.setSentenceCount(sentences_num);

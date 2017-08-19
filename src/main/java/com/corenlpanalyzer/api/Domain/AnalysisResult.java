@@ -1,5 +1,6 @@
 package com.corenlpanalyzer.api.Domain;
 
+import com.corenlpanalyzer.api.NLP.TopicExtractionResult;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JavaType;
@@ -25,6 +26,7 @@ public class AnalysisResult{
     private List<CorefChain> corefChains;
     private Map<String, List<String>> NERentities;
     private List<List<String[]>> corefChainsList;
+    private TopicExtractionResult topicExtractionResult;
 
     public AnalysisResult() {
     }
@@ -105,6 +107,18 @@ public class AnalysisResult{
 
     public void setCorefChains(List<CorefChain> corefChains) {
         this.corefChains = corefChains;
+    }
+
+    public void setCorefChainsList(List<List<String[]>> corefChainsList) {
+        this.corefChainsList = corefChainsList;
+    }
+
+    public TopicExtractionResult getTopicExtractionResult() {
+        return topicExtractionResult;
+    }
+
+    public void setTopicExtractionResult(TopicExtractionResult topicExtractionResult) {
+        this.topicExtractionResult = topicExtractionResult;
     }
 
     public String corefChainsListToString(){

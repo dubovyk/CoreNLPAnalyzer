@@ -10,4 +10,5 @@ public interface ICoreNLPAnalyzer extends Runnable {
 
     void setRawText(String rawText);
     void setAnnotator(StanfordCoreNLP coreNLP);
+    void setUseLDA(boolean isSet);
 }

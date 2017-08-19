@@ -91,6 +91,7 @@ public class FrontEndController {
         } else if (text != null){
 
             ICoreNLPAnalyzer analyzer = coreNLPAnalyzerService.getAnalyzer(text);
+            analyzer.setUseLDA(true);
 
             Thread thread = new Thread(analyzer);
             thread.start();

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@SuppressWarnings("Duplicates")
+
 @Service
 public class PageAnalyzerServiceImpl implements IPageAnalyzerService{
     private final IPageDataRetrievalService pageDataRetrievalService;
@@ -35,8 +35,6 @@ public class PageAnalyzerServiceImpl implements IPageAnalyzerService{
     public PageAnalysisResult score(String targetURL){
         RawPageData data;
 
-
-
         try {
             data = pageDataRetrievalService.getPageData(targetURL);
         } catch (RemoteAPIException ex){
@@ -52,8 +50,6 @@ public class PageAnalyzerServiceImpl implements IPageAnalyzerService{
             metaText.append(k).append(".\n");
         }
 
-
-
         StringBuilder wholePageText = new StringBuilder();
         wholePageText
                 .append(data.getTitle())
@@ -67,7 +63,10 @@ public class PageAnalyzerServiceImpl implements IPageAnalyzerService{
 
         ICoreNLPAnalyzer metaAnalyzer = coreNLPAnalyzerService.getAnalyzer(metaText.toString());
         ICoreNLPAnalyzer titleAnalyzer = coreNLPAnalyzerService.getAnalyzer(data.getTitle());
+
         ICoreNLPAnalyzer bodyAnalyzer = coreNLPAnalyzerService.getAnalyzer(data.getBodyText());
+        bodyAnalyzer.setUseLDA(true);
+
         ICoreNLPAnalyzer wholeAnalyzer = coreNLPAnalyzerService.getAnalyzer(wholePageText.toString());
 
         String[] texts = {data.getTitle(), metaText.toString(), data.getBodyText(), wholePageText.toString()};
@@ -80,7 +79,13 @@ public class PageAnalyzerServiceImpl implements IPageAnalyzerService{
         }
         executor.shutdown();
         while (!executor.isTerminated()){
-
+            synchronized (this){
+                try {
+                    this.wait(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         for(int i = 0; i < 4; i++){
@@ -91,46 +96,6 @@ public class PageAnalyzerServiceImpl implements IPageAnalyzerService{
         analysisResult.setMetaAnalysisResult(results[1]);
         analysisResult.setBodyAnalysisResult(results[2]);
         analysisResult.setWholePageAnalysisResult(results[3]);
-
-        /*ICoreNLPAnalyzer metaAnalyzer = coreNLPAnalyzerService.getAnalyzer(metaText.toString());
-        ICoreNLPAnalyzer titleAnalyzer = coreNLPAnalyzerService.getAnalyzer(data.getTitle());
-        Thread metaAnalyzerThread = new Thread(metaAnalyzer);
-        Thread titleAnalyzerThread = new Thread(titleAnalyzer);
-        metaAnalyzerThread.start();
-        titleAnalyzerThread.start();
-        try {
-            metaAnalyzerThread.join();
-            titleAnalyzerThread.join();
-        } catch (InterruptedException ignored){
-
-        } finally {
-            coreNLPAnalyzerService.pushAnalyzer(metaAnalyzer.getAnnotator());
-            coreNLPAnalyzerService.pushAnalyzer(titleAnalyzer.getAnnotator());
-        }
-
-        analysisResult.setTitleAnalysisResult(titleAnalyzer.getResult());
-        analysisResult.setMetaAnalysisResult(metaAnalyzer.getResult());
-
-        ICoreNLPAnalyzer bodyAnalyzer = coreNLPAnalyzerService.getAnalyzer(data.getBodyText());
-        ICoreNLPAnalyzer wholeAnalyzer = coreNLPAnalyzerService.getAnalyzer(wholePageText.toString());
-
-        Thread bodyAnalyzerThread = new Thread(bodyAnalyzer);
-        Thread wholeAnalyzerThread = new Thread(wholeAnalyzer);
-
-        bodyAnalyzerThread.start();
-        wholeAnalyzerThread.start();
-        try {
-            bodyAnalyzerThread.join();
-            wholeAnalyzerThread.join();
-        } catch (InterruptedException ignored){
-
-        } finally {
-            coreNLPAnalyzerService.pushAnalyzer(bodyAnalyzer.getAnnotator());
-            coreNLPAnalyzerService.pushAnalyzer(wholeAnalyzer.getAnnotator());
-        }
-
-        analysisResult.setBodyAnalysisResult(bodyAnalyzer.getResult());
-        analysisResult.setWholePageAnalysisResult(wholeAnalyzer.getResult());*/
 
         return analysisResult;
     }
