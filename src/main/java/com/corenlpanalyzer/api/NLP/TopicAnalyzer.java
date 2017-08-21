@@ -2,12 +2,15 @@ package com.corenlpanalyzer.api.NLP;
 
 import cc.mallet.pipe.*;
 import cc.mallet.topics.ParallelTopicModel;
-import cc.mallet.types.*;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
+import cc.mallet.types.Alphabet;
+import cc.mallet.types.IDSorter;
+import cc.mallet.types.Instance;
+import cc.mallet.types.InstanceList;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 public class TopicAnalyzer{
@@ -20,12 +23,16 @@ public class TopicAnalyzer{
         ArrayList<Pipe> pipeList = new ArrayList<>();
 
         ClassLoader classLoader = getClass().getClassLoader();
-        File stopwords = new File(classLoader.getResource("stopwords.txt").getFile());
 
         // Pipes: lowercase, tokenize, remove stopwords, map to features
         pipeList.add( new CharSequenceLowercase() );
         pipeList.add( new CharSequence2TokenSequence(Pattern.compile("\\p{L}[\\p{L}\\p{P}]+\\p{L}")) );
-        pipeList.add( new TokenSequenceRemoveStopwords(stopwords, "UTF-8", false, false, false) );
+
+        try {
+            File file = new File(classLoader.getResource("files/stopwords.txt").getFile());
+            pipeList.add( new TokenSequenceRemoveStopwords(file, "UTF-8", false, false, false) );
+        } catch (NullPointerException ignored){}
+
         pipeList.add( new TokenSequence2FeatureSequence() );
 
         InstanceList instances = new InstanceList (new SerialPipes(pipeList));

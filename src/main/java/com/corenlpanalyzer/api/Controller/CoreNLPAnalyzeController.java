@@ -8,9 +8,11 @@ import com.corenlpanalyzer.api.Service.IPageAnalyzerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class defines all API endpoints directly related
@@ -64,9 +66,10 @@ public class CoreNLPAnalyzeController {
                 try {
                     thread.join();
                 } catch (InterruptedException ignored){
+                } finally {
+                    rawAnalyzerService.pushAnalyzer(analyzer.getAnnotator());
                 }
 
-                rawAnalyzerService.pushAnalyzer(analyzer.getAnnotator());
 
                 results.add(analyzer.getResult());
             }

@@ -1,7 +1,5 @@
 package com.corenlpanalyzer.api.NLP;
 
-import java.util.Arrays;
-
 public class TopicExtractionResult {
     private int numTopics;
     private int numWords;
@@ -66,10 +64,12 @@ public class TopicExtractionResult {
                     .append(topic)
                     .append("<hr/>");
             for(int word = 0; word < data[topic].length; word++){
-                buffer.append(data[topic][word].getWord())
-                        .append(" : ")
-                        .append(data[topic][word].getWeight())
-                        .append("<br/>");
+                if (data[topic][word] != null){
+                    buffer.append(data[topic][word].getWord())
+                            .append(" : ")
+                            .append(data[topic][word].getWeight())
+                            .append("<br/>");
+                }
             }
         }
         return buffer.toString();
