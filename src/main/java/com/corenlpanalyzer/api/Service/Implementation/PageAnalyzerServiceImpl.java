@@ -59,22 +59,17 @@ public class PageAnalyzerServiceImpl implements IPageAnalyzerService{
 
         PageAnalysisResult analysisResult = new PageAnalysisResult();
 
-        ICoreNLPAnalyzer metaAnalyzer = coreNLPAnalyzerService.getAnalyzer(metaText.toString());
-        ICoreNLPAnalyzer titleAnalyzer = coreNLPAnalyzerService.getAnalyzer(data.getTitle());
-
-        ICoreNLPAnalyzer bodyAnalyzer = coreNLPAnalyzerService.getAnalyzer(data.getBodyText());
-        bodyAnalyzer.setUseLDA(true);
-
-        ICoreNLPAnalyzer wholeAnalyzer = coreNLPAnalyzerService.getAnalyzer(wholePageText.toString());
-
         String[] texts = {data.getTitle(), metaText.toString(), data.getBodyText(), wholePageText.toString()};
-        ICoreNLPAnalyzer[] analyzers = {metaAnalyzer, titleAnalyzer, bodyAnalyzer, wholeAnalyzer};
+        ICoreNLPAnalyzer[] analyzers = new ICoreNLPAnalyzer[4]; //{metaAnalyzer, titleAnalyzer, bodyAnalyzer, wholeAnalyzer};
         AnalysisResult[] results = new AnalysisResult[4];
 
         executor = Executors.newFixedThreadPool(THREAD_NUM);
 
         for(int i = 0; i < 4; i++){
             analyzers[i] = coreNLPAnalyzerService.getAnalyzer(texts[i]);
+            if (i == 2){
+                analyzers[i].setUseLDA(true);
+            }
             executor.execute(analyzers[i]);
         }
         executor.shutdown();

@@ -28,10 +28,17 @@ public class TopicAnalyzer{
         pipeList.add( new CharSequenceLowercase() );
         pipeList.add( new CharSequence2TokenSequence(Pattern.compile("\\p{L}[\\p{L}\\p{P}]+\\p{L}")) );
 
+        boolean fileGood = false;
+        File file = null;
         try {
-            File file = new File(classLoader.getResource("files/stopwords.txt").getFile());
+            file = new File(classLoader.getResource("files/stopwords.txt").getFile());
+            TokenSequenceRemoveStopwords removeStopwords = new TokenSequenceRemoveStopwords(file, "UTF-8", false, false, false);
+            fileGood = true;
+        } catch (Exception ignored){}
+
+        if(fileGood){
             pipeList.add( new TokenSequenceRemoveStopwords(file, "UTF-8", false, false, false) );
-        } catch (NullPointerException ignored){}
+        }
 
         pipeList.add( new TokenSequence2FeatureSequence() );
 

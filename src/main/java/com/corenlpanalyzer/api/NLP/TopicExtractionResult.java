@@ -71,6 +71,7 @@ public class TopicExtractionResult {
                             .append("<br/>");
                 }
             }
+            buffer.append("<br/>");
         }
         return buffer.toString();
     }
