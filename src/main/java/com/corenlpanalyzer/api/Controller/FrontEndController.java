@@ -2,6 +2,7 @@ package com.corenlpanalyzer.api.Controller;
 
 import com.corenlpanalyzer.api.Domain.AnalysisResult;
 import com.corenlpanalyzer.api.Domain.PageAnalysisResult;
+import com.corenlpanalyzer.api.Runnables.ICoreNLPAnalyzer;
 import com.corenlpanalyzer.api.Service.ICoreNLPAnalyzerService;
 import com.corenlpanalyzer.api.Service.IPageAnalyzerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,9 @@ public class FrontEndController {
             model.addAttribute("body_ner_location", resultPage.getBodyAnalysisResult().getNamedEntititesAsString("LOCATION"));
             model.addAttribute("body_ner_organization", resultPage.getBodyAnalysisResult().getNamedEntititesAsString("ORGANIZATION"));
             model.addAttribute("body_ner_misc", resultPage.getBodyAnalysisResult().getNamedEntititesAsString("MISC"));
+            if (resultPage.getBodyAnalysisResult().getTopicExtractionResult() != null && resultPage.getBodyAnalysisResult().getTopicExtractionResult().toHtmlString() != null){
+                model.addAttribute("body_topic_data", resultPage.getBodyAnalysisResult().getTopicExtractionResult().toHtmlString());
+            }
 
 
             model.addAttribute("title_text", resultPage.getTitleAnalysisResult().getTargetText());
@@ -87,8 +91,20 @@ public class FrontEndController {
             model.addAttribute("ner_organization", resultPage.getWholePageAnalysisResult().getNamedEntititesAsString("ORGANIZATION"));
             model.addAttribute("ner_misc", resultPage.getWholePageAnalysisResult().getNamedEntititesAsString("MISC"));
         } else if (text != null){
-            resultText = coreNLPAnalyzerService.score(text);
-            model.addAttribute("whole", 1);
+
+            ICoreNLPAnalyzer analyzer = coreNLPAnalyzerService.getAnalyzer(text);
+            analyzer.setUseLDA(true);
+
+            Thread thread = new Thread(analyzer);
+            thread.start();
+            try {
+                thread.join();
+            } catch (InterruptedException ignored){
+            }
+
+            coreNLPAnalyzerService.pushAnalyzer(analyzer.getAnnotator());
+            resultText = analyzer.getResult();
+            model.addAttribute("raw_text", 1);
             model.addAttribute("visible", "visibility: visible;");
             model.addAttribute("text", resultText.getTargetText());
             model.addAttribute("sentiment", resultText.getBodyEmotionsCoefficient());
@@ -101,6 +117,10 @@ public class FrontEndController {
             model.addAttribute("ner_location", resultText.getNamedEntititesAsString("LOCATION"));
             model.addAttribute("ner_organization", resultText.getNamedEntititesAsString("ORGANIZATION"));
             model.addAttribute("ner_misc", resultText.getNamedEntititesAsString("MISC"));
+            if (resultText.getTopicExtractionResult() != null && resultText.getTopicExtractionResult().toHtmlString() != null){
+                model.addAttribute("topic_data", resultText.getTopicExtractionResult().toHtmlString());
+            }
+
         } else {
             model.addAttribute("info", 1);
         }

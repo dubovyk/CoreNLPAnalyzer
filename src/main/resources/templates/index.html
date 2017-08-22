@@ -186,6 +186,10 @@
             <td colspan="2"><p th:remove="tag" th:utext="${body_coref_chains}" /></td>
           </tr>
           <tr>
+            <td>Body topic extraction data</td>
+            <td th:colspan="2"><p th:remove="tag" th:utext="${body_topic_data}" /></td>
+          </tr>
+          <tr>
             <td rowspan="5">Named entities</td>
           </tr>
           <tr>
@@ -239,6 +243,63 @@
           <tr>
             <td>Coreference chains</td>
             <td colspan="2"><p th:remove="tag" th:utext="${coref_chains}" /></td>
+          </tr>
+          <tr>
+            <td rowspan="5">Named entities</td>
+          </tr>
+          <tr>
+            <td>Person</td>
+            <td><p th:remove="tag" th:utext="${ner_person}" /></td>
+          </tr>
+          <tr>
+            <td>Place</td>
+            <td><p th:remove="tag" th:utext="${ner_location}" /></td>
+          </tr>
+          <tr>
+            <td>Organization</td>
+            <td><p th:remove="tag" th:utext="${ner_organization}" /></td>
+          </tr>
+          <tr>
+            <td>Misc</td>
+            <td><p th:remove="tag" th:utext="${ner_misc}" /></td>
+          </tr>
+          <tr>
+            <td>Total sentiment coefficient</td>
+            <td colspan="2"><p th:text="${sentiment}" /></td>
+          </tr>
+          <tr>
+            <td>Total words number</td>
+            <td colspan="2"><p th:text="${word_num}" /></td>
+          </tr>
+          <tr>
+            <td>Total sentences number</td>
+            <td colspan="2"><p th:text="${sentence_num}" /></td>
+          </tr>
+          <tr>
+            <td>Average words per sentence</td>
+            <td colspan="2"><p th:text="${words_sentence}" /></td>
+          </tr>
+        </table>
+
+        <table th:if="${raw_text!=null}">
+          <tr>
+            <th colspan="3"><b>Whole page analysis</b></th>
+          </tr>
+          <tr>
+            <td>Page text</td>
+            <td colspan="2"><p th:text="${text}" /></td>
+          </tr>
+          <tr>
+            <td>Parse tree</td>
+            <td colspan="2"><p th:text="${parse_tree}" /></td>
+          </tr>
+          <tr>
+            <td>Coreference chains</td>
+            <td colspan="2"><p th:remove="tag" th:utext="${coref_chains}" /></td>
+          </tr>
+          <tr>
+            <td>Topic extraction data</td>
+            <td th:colspan="2"><p th:remove="tag" th:utext="${topic_data}" /></td>
           </tr>
           <tr>
             <td rowspan="5">Named entities</td>

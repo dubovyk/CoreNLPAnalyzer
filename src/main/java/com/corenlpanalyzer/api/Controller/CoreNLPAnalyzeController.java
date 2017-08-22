@@ -2,14 +2,17 @@ package com.corenlpanalyzer.api.Controller;
 
 import com.corenlpanalyzer.api.Domain.AnalysisResult;
 import com.corenlpanalyzer.api.Domain.PageAnalysisResult;
+import com.corenlpanalyzer.api.Runnables.ICoreNLPAnalyzer;
 import com.corenlpanalyzer.api.Service.ICoreNLPAnalyzerService;
 import com.corenlpanalyzer.api.Service.IPageAnalyzerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class defines all API endpoints directly related
@@ -51,9 +54,24 @@ public class CoreNLPAnalyzeController {
     public @ResponseBody List<AnalysisResult> analyze(@RequestBody Map<String, Object> data){
         List<AnalysisResult> results = new ArrayList<>();
 
+
         try {
             for (String text : (List<String>)data.get("text")){
-                results.add(rawAnalyzerService.score(text));
+
+                ICoreNLPAnalyzer analyzer = rawAnalyzerService.getAnalyzer(text);
+                analyzer.setUseLDA(true);
+
+                Thread thread = new Thread(analyzer);
+                thread.start();
+                try {
+                    thread.join();
+                } catch (InterruptedException ignored){
+                } finally {
+                    rawAnalyzerService.pushAnalyzer(analyzer.getAnnotator());
+                }
+
+
+                results.add(analyzer.getResult());
             }
         } catch (Exception ex){
             ex.printStackTrace();
