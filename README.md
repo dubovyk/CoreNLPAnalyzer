@@ -16,9 +16,34 @@ To verify, that you`ve run application successfully, you can use a GET request t
 
 ## Web usage
 
-The simplest way to use the application is to use its web-demo. To open it, go to the '/' address of your host with the analyzer. You`ll see a main page of an app, like in image below.
+The simplest way to use the application is to use its web-demo. To open it, go to the '/' address of your host with the analyzer. You`ll see a main page of an app, like on the image below.
 
-Inline-style: 
-![Kiku](imgs/interface-01.PNG)
+![Main_interface](imgs/interface-01.PNG "Main interface of an app")
+
+On this page, you can enter either a link to a page to be analyzed, either a text. If you`ll enter a text, then it will be analyzed on following aspects:
+- Sentiment (from 1 to 5)
+- Coreference chains
+- LDA topic extraction (basically, 5 topics, 5 top words each)
+- Named entities recognition (in web version just Person, Place, Organization and MISC, more via API)
+- Short summary (up to 10 percents of text size)
+- Keywords
+- Basic statistics (number of words, sentences, words per sentence).
+
+Also, application will build and return a parse tree of the text.
+
+In case if user enters a link in the format of ```http://somesite.example/sompepage``` services will analyze such blocks of the page:
+- Title
+- Meta data
+- Body text
+- All previous together
+
+However, it will do **topic extraction and summarization just for body** block.
 
 ## API reference
+
+Another way to use the application is via API. It provides endpoints both for web-page analysis and single text processing.
+
+### Web-page analysis
+#### ```GET /url_analyze?target_url=http://somthing.example/```
+
+To analyze a page, 
