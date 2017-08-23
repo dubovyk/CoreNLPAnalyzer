@@ -94,6 +94,7 @@ public class FrontEndController {
 
             ICoreNLPAnalyzer analyzer = coreNLPAnalyzerService.getAnalyzer(text);
             analyzer.setUseLDA(true);
+            analyzer.setUseSummarizer(true);
 
             Thread thread = new Thread(analyzer);
             thread.start();

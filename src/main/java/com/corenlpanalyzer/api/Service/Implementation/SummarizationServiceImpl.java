@@ -19,7 +19,7 @@ public class SummarizationServiceImpl implements ISummarizationService {
         }
         return summarizer.getSummary();
     }
-    public String getTags(String text){
+    public String getKeywords(String text){
         if (!(summarizer.getText() != null && summarizer.getText().equals(text))){
             summarizer.setText(text);
         }

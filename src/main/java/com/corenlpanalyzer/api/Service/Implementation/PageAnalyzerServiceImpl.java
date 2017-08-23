@@ -69,6 +69,7 @@ public class PageAnalyzerServiceImpl implements IPageAnalyzerService{
             analyzers[i] = coreNLPAnalyzerService.getAnalyzer(texts[i]);
             if (i == 2){
                 analyzers[i].setUseLDA(true);
+                analyzers[i].setUseSummarizer(true);
             }
             executor.execute(analyzers[i]);
         }

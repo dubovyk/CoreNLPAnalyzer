@@ -6,7 +6,8 @@ import com.corenlpanalyzer.api.NLP.Runnables.ICoreNLPAnalyzer;
 import com.corenlpanalyzer.api.NLP.Runnables.Implementation.CoreNLPAnalyzer;
 import com.corenlpanalyzer.api.Service.ICoreNLPAnalyzerService;
 import com.corenlpanalyzer.api.Service.IPageDataRetrievalService;
-import com.corenlpanalyzer.api.Utils.CoreNLPAnalyzerPool;
+import com.corenlpanalyzer.api.Service.ISummarizationService;
+import com.corenlpanalyzer.api.Service.ITopicExtractionService;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,11 +20,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class CoreNLPAnalyzerServiceImpl implements ICoreNLPAnalyzerService {
     private final IPageDataRetrievalService pageDataRetrievalService;
+    private final ITopicExtractionService topicExtractionService;
+    private final ISummarizationService summarizationService;
+    private final CoreNLPAnalyzerPool analyzerPool;
+
     private int THREAD_NUM = 2;
 
     @Autowired
-    public CoreNLPAnalyzerServiceImpl(IPageDataRetrievalService pageDataRetrievalService) {
+    public CoreNLPAnalyzerServiceImpl(IPageDataRetrievalService pageDataRetrievalService, ITopicExtractionService topicExtractionService, ISummarizationService summarizationService, CoreNLPAnalyzerPool analyzerPool) {
         this.pageDataRetrievalService = pageDataRetrievalService;
+        this.topicExtractionService = topicExtractionService;
+        this.summarizationService = summarizationService;
+        this.analyzerPool = analyzerPool;
     }
 
     /**
@@ -55,13 +63,13 @@ public class CoreNLPAnalyzerServiceImpl implements ICoreNLPAnalyzerService {
 
     @Override
     public ICoreNLPAnalyzer getAnalyzer(String rawText){
-        ICoreNLPAnalyzer analyzer = new CoreNLPAnalyzer();
+        ICoreNLPAnalyzer analyzer = new CoreNLPAnalyzer(topicExtractionService, summarizationService);
         analyzer.setRawText(rawText);
         return analyzer;
     }
 
     @Override
     public void pushAnalyzer(StanfordCoreNLP coreNLP){
-        CoreNLPAnalyzerPool.getInstance().pushAnalyzer(coreNLP);
+        analyzerPool.pushAnalyzer(coreNLP);
     }
 }
