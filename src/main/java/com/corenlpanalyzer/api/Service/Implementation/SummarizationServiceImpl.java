@@ -2,7 +2,10 @@ package com.corenlpanalyzer.api.Service.Implementation;
 
 import com.corenlpanalyzer.api.NLP.Summarizer.Summarizer;
 import com.corenlpanalyzer.api.Service.ISummarizationService;
+import org.springframework.stereotype.Service;
 
+
+@Service
 public class SummarizationServiceImpl implements ISummarizationService {
     private Summarizer summarizer;
 

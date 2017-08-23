@@ -5,14 +5,12 @@ import com.corenlpanalyzer.api.Domain.PageAnalysisResult;
 import com.corenlpanalyzer.api.NLP.Runnables.ICoreNLPAnalyzer;
 import com.corenlpanalyzer.api.Service.ICoreNLPAnalyzerService;
 import com.corenlpanalyzer.api.Service.IPageAnalyzerService;
+import com.corenlpanalyzer.api.Service.ISummarizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class defines all API endpoints directly related
@@ -25,11 +23,13 @@ import java.util.Map;
 public class CoreNLPAnalyzeController {
     private final ICoreNLPAnalyzerService rawAnalyzerService;
     private final IPageAnalyzerService pageAnalyzerService;
+    private final ISummarizationService summarizationService;
 
     @Autowired
-    public CoreNLPAnalyzeController(ICoreNLPAnalyzerService analyzerService, IPageAnalyzerService pageAnalyzerService) {
+    public CoreNLPAnalyzeController(ICoreNLPAnalyzerService analyzerService, IPageAnalyzerService pageAnalyzerService, ISummarizationService summarizationService) {
         this.rawAnalyzerService = analyzerService;
         this.pageAnalyzerService = pageAnalyzerService;
+        this.summarizationService = summarizationService;
     }
 
     /**
@@ -77,6 +77,24 @@ public class CoreNLPAnalyzeController {
             ex.printStackTrace();
         }
         return results;
+    }
+
+    @PostMapping(path = "/single_analyze/summary")
+    public List<Map<String, String>> summaryEndpoint(@RequestBody Map<String, Object> input){
+        List<Map<String, String>> result = new ArrayList<>();
+
+        try {
+            for (String text : (List<String>)input.get("text")){
+                Map<String, String> res = new HashMap<>();
+                res.put("summary", summarizationService.getSummary(text));
+                res.put("keywords", summarizationService.getTags(text));
+                result.add(res);
+            }
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+        return result;
     }
 
     @GetMapping("/echo")
