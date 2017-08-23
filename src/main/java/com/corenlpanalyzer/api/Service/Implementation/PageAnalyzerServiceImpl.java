@@ -3,7 +3,7 @@ package com.corenlpanalyzer.api.Service.Implementation;
 import com.corenlpanalyzer.api.Domain.AnalysisResult;
 import com.corenlpanalyzer.api.Domain.PageAnalysisResult;
 import com.corenlpanalyzer.api.Domain.RawPageData;
-import com.corenlpanalyzer.api.Runnables.ICoreNLPAnalyzer;
+import com.corenlpanalyzer.api.NLP.Runnables.ICoreNLPAnalyzer;
 import com.corenlpanalyzer.api.Service.ICoreNLPAnalyzerService;
 import com.corenlpanalyzer.api.Service.IPageAnalyzerService;
 import com.corenlpanalyzer.api.Service.IPageDataRetrievalService;
@@ -69,6 +69,7 @@ public class PageAnalyzerServiceImpl implements IPageAnalyzerService{
             analyzers[i] = coreNLPAnalyzerService.getAnalyzer(texts[i]);
             if (i == 2){
                 analyzers[i].setUseLDA(true);
+                analyzers[i].setUseSummarizer(true);
             }
             executor.execute(analyzers[i]);
         }

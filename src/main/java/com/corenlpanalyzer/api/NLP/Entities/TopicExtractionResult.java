@@ -1,4 +1,4 @@
-package com.corenlpanalyzer.api.NLP;
+package com.corenlpanalyzer.api.NLP.Entities;
 
 public class TopicExtractionResult {
     private int numTopics;

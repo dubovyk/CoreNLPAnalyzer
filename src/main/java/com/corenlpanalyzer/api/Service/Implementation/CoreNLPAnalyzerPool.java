@@ -1,25 +1,32 @@
-package com.corenlpanalyzer.api.Utils;
+package com.corenlpanalyzer.api.Service.Implementation;
 
-import com.corenlpanalyzer.api.Runnables.ICoreNLPAnalyzer;
-import com.corenlpanalyzer.api.Runnables.Implementation.CoreNLPAnalyzer;
+import com.corenlpanalyzer.api.NLP.Runnables.ICoreNLPAnalyzer;
+import com.corenlpanalyzer.api.NLP.Runnables.Implementation.CoreNLPAnalyzer;
+import com.corenlpanalyzer.api.Service.ICoreNLPAnalyzerPool;
+import com.corenlpanalyzer.api.Service.ISummarizationService;
+import com.corenlpanalyzer.api.Service.ITopicExtractionService;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Properties;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class CoreNLPAnalyzerPool {
+@Service
+public class CoreNLPAnalyzerPool implements ICoreNLPAnalyzerPool{
+
+    private final ITopicExtractionService topicExtractionService;
+    private final ISummarizationService summarizationService;
+
     private final AtomicReference<Stack<StanfordCoreNLP>> pipelineStack;
     private static final AtomicInteger THREAD_NUM = new AtomicInteger(2);
 
-    private static CoreNLPAnalyzerPool ourInstance = new CoreNLPAnalyzerPool();
-
-    public static CoreNLPAnalyzerPool getInstance() {
-        return ourInstance;
-    }
-
-    private CoreNLPAnalyzerPool() {
+    @Autowired
+    private CoreNLPAnalyzerPool(ITopicExtractionService topicExtractionService, ISummarizationService summarizationService) {
+        this.topicExtractionService = topicExtractionService;
+        this.summarizationService = summarizationService;
         pipelineStack = new AtomicReference<>(new Stack<>());
 
         Properties properties = new Properties();
@@ -32,7 +39,7 @@ public class CoreNLPAnalyzerPool {
     }
 
     public ICoreNLPAnalyzer getAnalyzer(String rawText){
-        ICoreNLPAnalyzer analyzer = new CoreNLPAnalyzer();
+        ICoreNLPAnalyzer analyzer = new CoreNLPAnalyzer(topicExtractionService, summarizationService);
         analyzer.setRawText(rawText);
 
         System.out.println(String.format("%d annotators available", pipelineStack.get().size()));

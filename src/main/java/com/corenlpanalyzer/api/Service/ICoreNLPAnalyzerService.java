@@ -2,7 +2,7 @@ package com.corenlpanalyzer.api.Service;
 
 import com.corenlpanalyzer.api.Domain.AnalysisResult;
 import com.corenlpanalyzer.api.Domain.RawPageData;
-import com.corenlpanalyzer.api.Runnables.ICoreNLPAnalyzer;
+import com.corenlpanalyzer.api.NLP.Runnables.ICoreNLPAnalyzer;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 
 /**

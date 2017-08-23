@@ -1,4 +1,4 @@
-package com.corenlpanalyzer.api.NLP;
+package com.corenlpanalyzer.api.NLP.Algorithm;
 
 import cc.mallet.pipe.*;
 import cc.mallet.topics.ParallelTopicModel;
@@ -6,6 +6,7 @@ import cc.mallet.types.Alphabet;
 import cc.mallet.types.IDSorter;
 import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
+import com.corenlpanalyzer.api.NLP.Entities.TopicExtractionResult;
 
 import java.io.File;
 import java.util.ArrayList;

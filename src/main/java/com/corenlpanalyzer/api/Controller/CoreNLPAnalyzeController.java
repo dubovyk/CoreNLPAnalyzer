@@ -2,17 +2,17 @@ package com.corenlpanalyzer.api.Controller;
 
 import com.corenlpanalyzer.api.Domain.AnalysisResult;
 import com.corenlpanalyzer.api.Domain.PageAnalysisResult;
-import com.corenlpanalyzer.api.Runnables.ICoreNLPAnalyzer;
+import com.corenlpanalyzer.api.NLP.Entities.TopicExtractionResult;
+import com.corenlpanalyzer.api.NLP.Runnables.ICoreNLPAnalyzer;
 import com.corenlpanalyzer.api.Service.ICoreNLPAnalyzerService;
 import com.corenlpanalyzer.api.Service.IPageAnalyzerService;
+import com.corenlpanalyzer.api.Service.ISummarizationService;
+import com.corenlpanalyzer.api.Service.ITopicExtractionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class defines all API endpoints directly related
@@ -25,11 +25,15 @@ import java.util.Map;
 public class CoreNLPAnalyzeController {
     private final ICoreNLPAnalyzerService rawAnalyzerService;
     private final IPageAnalyzerService pageAnalyzerService;
+    private final ISummarizationService summarizationService;
+    private final ITopicExtractionService topicExtractionService;
 
     @Autowired
-    public CoreNLPAnalyzeController(ICoreNLPAnalyzerService analyzerService, IPageAnalyzerService pageAnalyzerService) {
+    public CoreNLPAnalyzeController(ICoreNLPAnalyzerService analyzerService, IPageAnalyzerService pageAnalyzerService, ISummarizationService summarizationService, ITopicExtractionService topicExtractionService) {
         this.rawAnalyzerService = analyzerService;
         this.pageAnalyzerService = pageAnalyzerService;
+        this.summarizationService = summarizationService;
+        this.topicExtractionService = topicExtractionService;
     }
 
     /**
@@ -60,6 +64,7 @@ public class CoreNLPAnalyzeController {
 
                 ICoreNLPAnalyzer analyzer = rawAnalyzerService.getAnalyzer(text);
                 analyzer.setUseLDA(true);
+                analyzer.setUseSummarizer(true);
 
                 Thread thread = new Thread(analyzer);
                 thread.start();
@@ -77,6 +82,39 @@ public class CoreNLPAnalyzeController {
             ex.printStackTrace();
         }
         return results;
+    }
+
+    @PostMapping(path = "/single_analyze/summary")
+    public List<Map<String, String>> summaryEndpoint(@RequestBody Map<String, Object> input){
+        List<Map<String, String>> result = new ArrayList<>();
+
+        try {
+            for (String text : (List<String>)input.get("text")){
+                Map<String, String> res = new HashMap<>();
+                res.put("summary", summarizationService.getSummary(text));
+                res.put("keywords", summarizationService.getKeywords(text));
+                result.add(res);
+            }
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+        return result;
+    }
+
+    @PostMapping(path = "/single_analyze/topics")
+    public List<TopicExtractionResult> topicsEndpoint(@RequestBody Map<String, Object> input){
+        List<TopicExtractionResult> result = new ArrayList<>();
+
+        try {
+            for (String text : (List<String>)input.get("text")){
+                result.add(topicExtractionService.getTopic(text));
+            }
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+        return result;
     }
 
     @GetMapping("/echo")

@@ -1,10 +1,10 @@
-package com.corenlpanalyzer.api.Runnables.Implementation;
+package com.corenlpanalyzer.api.NLP.Runnables.Implementation;
 
 import com.corenlpanalyzer.api.Domain.AnalysisResult;
-import com.corenlpanalyzer.api.Domain.SentimentValuesEnum;
-import com.corenlpanalyzer.api.NLP.TopicAnalyzer;
-import com.corenlpanalyzer.api.Runnables.ICoreNLPAnalyzer;
-import com.corenlpanalyzer.api.Utils.CoreNLPAnalyzerPool;
+import com.corenlpanalyzer.api.NLP.Entities.SentimentValuesEnum;
+import com.corenlpanalyzer.api.NLP.Runnables.ICoreNLPAnalyzer;
+import com.corenlpanalyzer.api.Service.ISummarizationService;
+import com.corenlpanalyzer.api.Service.ITopicExtractionService;
 import com.corenlpanalyzer.api.Utils.CoreNLPAnnotatorPool;
 import edu.stanford.nlp.coref.CorefCoreAnnotations;
 import edu.stanford.nlp.coref.data.CorefChain;
@@ -27,8 +27,14 @@ public class CoreNLPAnalyzer implements ICoreNLPAnalyzer{
     private String rawText;
     private StanfordCoreNLP coreNLP;
     private boolean useLDA;
+    private boolean useSummarizer;
 
-    public CoreNLPAnalyzer(){
+    private ISummarizationService summarizationService;
+    private ITopicExtractionService topicExtractionService;
+
+    public CoreNLPAnalyzer(ITopicExtractionService topicExtractionService, ISummarizationService summarizationService){
+        this.summarizationService = summarizationService;
+        this.topicExtractionService = topicExtractionService;
     }
 
     public CoreNLPAnalyzer(StanfordCoreNLP coreNLP){
@@ -57,6 +63,11 @@ public class CoreNLPAnalyzer implements ICoreNLPAnalyzer{
     @Override
     public StanfordCoreNLP getAnnotator(){
         return this.coreNLP;
+    }
+
+    @Override
+    public void setUseSummarizer(boolean useSummarizer) {
+        this.useSummarizer = useSummarizer;
     }
 
     @Override
@@ -154,13 +165,21 @@ public class CoreNLPAnalyzer implements ICoreNLPAnalyzer{
         result.setCorefChains(chains);
 
         if (this.useLDA){
-            TopicAnalyzer topicAnalyzer = new TopicAnalyzer();
-
             try {
-                result.setTopicExtractionResult(topicAnalyzer.analyze(rawText, 5, 5));
+                result.setTopicExtractionResult(topicExtractionService.getTopic(rawText));
             } catch (Exception ex){
                 ex.printStackTrace();
                 result.setTopicExtractionResult(null);
+            }
+        }
+
+        if (this.useSummarizer){
+            try {
+                result.setSummaryText(summarizationService.getSummary(rawText));
+                result.setKeywordsString(summarizationService.getKeywords(rawText));
+            } catch (Exception ex){
+                result.setSummaryText(null);
+                result.setKeywordsString(null);
             }
         }
 

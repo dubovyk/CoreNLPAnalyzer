@@ -1,19 +1,9 @@
 package com.corenlpanalyzer.api.Domain;
 
-import com.corenlpanalyzer.api.NLP.TopicExtractionResult;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.BeanDescription;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
+import com.corenlpanalyzer.api.NLP.Entities.TopicExtractionResult;
 import edu.stanford.nlp.coref.data.CorefChain;
 
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +17,8 @@ public class AnalysisResult{
     private Map<String, List<String>> NERentities;
     private List<List<String[]>> corefChainsList;
     private TopicExtractionResult topicExtractionResult;
+    private String summaryText;
+    private String keywordsString;
 
     public AnalysisResult() {
     }
@@ -119,6 +111,22 @@ public class AnalysisResult{
 
     public void setTopicExtractionResult(TopicExtractionResult topicExtractionResult) {
         this.topicExtractionResult = topicExtractionResult;
+    }
+
+    public String getSummaryText() {
+        return summaryText;
+    }
+
+    public void setSummaryText(String summaryText) {
+        this.summaryText = summaryText;
+    }
+
+    public String getKeywordsString() {
+        return keywordsString;
+    }
+
+    public void setKeywordsString(String keywordsString) {
+        this.keywordsString = keywordsString;
     }
 
     public String corefChainsListToString(){
