@@ -1,10 +1,9 @@
-package com.corenlpanalyzer.api.Runnables.Implementation;
+package com.corenlpanalyzer.api.NLP.Runnables.Implementation;
 
 import com.corenlpanalyzer.api.Domain.AnalysisResult;
-import com.corenlpanalyzer.api.Domain.SentimentValuesEnum;
-import com.corenlpanalyzer.api.NLP.TopicAnalyzer;
-import com.corenlpanalyzer.api.Runnables.ICoreNLPAnalyzer;
-import com.corenlpanalyzer.api.Utils.CoreNLPAnalyzerPool;
+import com.corenlpanalyzer.api.NLP.Entities.SentimentValuesEnum;
+import com.corenlpanalyzer.api.NLP.Algorithm.TopicAnalyzer;
+import com.corenlpanalyzer.api.NLP.Runnables.ICoreNLPAnalyzer;
 import com.corenlpanalyzer.api.Utils.CoreNLPAnnotatorPool;
 import edu.stanford.nlp.coref.CorefCoreAnnotations;
 import edu.stanford.nlp.coref.data.CorefChain;
@@ -27,6 +26,7 @@ public class CoreNLPAnalyzer implements ICoreNLPAnalyzer{
     private String rawText;
     private StanfordCoreNLP coreNLP;
     private boolean useLDA;
+    private boolean useSummarizer;
 
     public CoreNLPAnalyzer(){
     }
@@ -57,6 +57,11 @@ public class CoreNLPAnalyzer implements ICoreNLPAnalyzer{
     @Override
     public StanfordCoreNLP getAnnotator(){
         return this.coreNLP;
+    }
+
+    @Override
+    public void setUseSummarizer(boolean useSummarizer) {
+        this.useSummarizer = useSummarizer;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.corenlpanalyzer.api.Domain;
+package com.corenlpanalyzer.api.NLP.Entities;
 
 public enum SentimentValuesEnum {
     VERY_NEGATIVE,

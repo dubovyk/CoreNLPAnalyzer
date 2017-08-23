@@ -2,27 +2,14 @@ package com.corenlpanalyzer.api.Service.Implementation;
 
 import com.corenlpanalyzer.api.Domain.AnalysisResult;
 import com.corenlpanalyzer.api.Domain.RawPageData;
-import com.corenlpanalyzer.api.Domain.SentimentValuesEnum;
-import com.corenlpanalyzer.api.Runnables.ICoreNLPAnalyzer;
-import com.corenlpanalyzer.api.Runnables.Implementation.CoreNLPAnalyzer;
+import com.corenlpanalyzer.api.NLP.Runnables.ICoreNLPAnalyzer;
+import com.corenlpanalyzer.api.NLP.Runnables.Implementation.CoreNLPAnalyzer;
 import com.corenlpanalyzer.api.Service.ICoreNLPAnalyzerService;
 import com.corenlpanalyzer.api.Service.IPageDataRetrievalService;
 import com.corenlpanalyzer.api.Utils.CoreNLPAnalyzerPool;
-import edu.stanford.nlp.coref.CorefCoreAnnotations;
-import edu.stanford.nlp.coref.data.CorefChain;
-import edu.stanford.nlp.ling.CoreAnnotations;
-import edu.stanford.nlp.ling.CoreLabel;
-import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
-import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
-import edu.stanford.nlp.simple.Sentence;
-import edu.stanford.nlp.trees.Tree;
-import edu.stanford.nlp.trees.TreeCoreAnnotations;
-import edu.stanford.nlp.util.CoreMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 /**
  * This is an implementation of ICoreNLPAnalyzerService which works with

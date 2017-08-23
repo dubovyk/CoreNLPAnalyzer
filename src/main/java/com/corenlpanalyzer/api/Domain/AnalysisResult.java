@@ -17,6 +17,8 @@ public class AnalysisResult{
     private Map<String, List<String>> NERentities;
     private List<List<String[]>> corefChainsList;
     private TopicExtractionResult topicExtractionResult;
+    private String summaryText;
+    private String keywordsString;
 
     public AnalysisResult() {
     }
@@ -109,6 +111,22 @@ public class AnalysisResult{
 
     public void setTopicExtractionResult(TopicExtractionResult topicExtractionResult) {
         this.topicExtractionResult = topicExtractionResult;
+    }
+
+    public String getSummaryText() {
+        return summaryText;
+    }
+
+    public void setSummaryText(String summaryText) {
+        this.summaryText = summaryText;
+    }
+
+    public String getKeywordsString() {
+        return keywordsString;
+    }
+
+    public void setKeywordsString(String keywordsString) {
+        this.keywordsString = keywordsString;
     }
 
     public String corefChainsListToString(){

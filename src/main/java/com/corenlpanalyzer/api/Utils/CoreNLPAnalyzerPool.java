@@ -1,7 +1,7 @@
 package com.corenlpanalyzer.api.Utils;
 
-import com.corenlpanalyzer.api.Runnables.ICoreNLPAnalyzer;
-import com.corenlpanalyzer.api.Runnables.Implementation.CoreNLPAnalyzer;
+import com.corenlpanalyzer.api.NLP.Runnables.ICoreNLPAnalyzer;
+import com.corenlpanalyzer.api.NLP.Runnables.Implementation.CoreNLPAnalyzer;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 
 import java.util.Properties;

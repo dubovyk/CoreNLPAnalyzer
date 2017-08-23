@@ -1,4 +1,4 @@
-package com.corenlpanalyzer.api.NLP;
+package com.corenlpanalyzer.api.NLP.Algorithm;
 
 import cc.mallet.pipe.*;
 import cc.mallet.topics.ParallelTopicModel;
