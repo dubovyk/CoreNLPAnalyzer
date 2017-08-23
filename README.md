@@ -43,6 +43,49 @@ However, it will do **topic extraction and summarization just for body** block.
 
 Another way to use the application is via API. It provides endpoints both for web-page analysis and single text processing.
 
+### Raw text full analysis
+#### ```POST /raw_analyze```
+
+To get analysis of raw text, you can use the above endpoint. The request, should be in the following format:
+
+```
+POST /raw_analyze HTTP/1.1
+Host: yourhost
+Content-Type: application/json
+{
+"text": ["Text 1.", "Text 2"]
+}
+```
+
+As you can see, it takes an array of input texts and return an array of analysis results.
+
+### Summarization
+#### ```POST /single_analysis/summary```
+
+You can also get just a summary and a list of keywords for given texts. To do it, you should call the ```/single_analysis/summary``` endpoint with the following format of request:
+```json
+POST /single_analyze/summary HTTP/1.1
+Host: 127.0.0.1:8080
+Content-Type: application/json
+
+{
+"text": ["This summary script works well for news articles and blog posts and that’s the basic motive of implementing this script.", "Some another text to be analyzed"]
+}
+```
+
+### Topic extration
+#### ```POST /single_analysis/topics```
+
+Finally, you can get topics data of given texts or text. To do such analysis, you should use request, like the following one:
+```json
+POST /single_analyze/topics HTTP/1.1
+Host: 127.0.0.1:8080
+Content-Type: application/json
+{
+"text": ["This summary script works well for news articles and blog posts and that’s the basic motive of implementing this script. It inputs the text content, splits it into paragraphs, splits it into sentences, filter out stopwords, calculates score (relevance) of each sentence, and on the basis of the scores assigned to each sentence it displays the most relevant results depending upon how concise we want our summary to be."]
+}
+```
+
 ### Web-page analysis
 #### GET /url_analyze?target_url=http://somthing.example/
 
@@ -1313,48 +1356,5 @@ To analyze a page, user should send a GET-request to the /url_analyze endpoint a
             ]
         }
     }
-}
-```
-
-### Raw text full analysis
-#### ```POST /raw_analyze```
-
-To get analysis of raw text, you can use the above endpoint. The request, should be in the following format:
-
-```
-POST /raw_analyze HTTP/1.1
-Host: yourhost
-Content-Type: application/json
-{
-"text": ["Text 1.", "Text 2"]
-}
-```
-
-As you can see, it takes an array of input texts and return an array of analysis results.
-
-### Summarization
-#### ```POST /single_analysis/summary```
-
-You can also get just a summary and a list of keywords for given texts. To do it, you should call the ```/single_analysis/summary``` endpoint with the following format of request:
-```json
-POST /single_analyze/summary HTTP/1.1
-Host: 127.0.0.1:8080
-Content-Type: application/json
-
-{
-"text": ["This summary script works well for news articles and blog posts and that’s the basic motive of implementing this script.", "Some another text to be analyzed"]
-}
-```
-
-### Topic extration
-#### ```POST /single_analysis/topics```
-
-Finally, you can get topics data of given texts or text. To do such analysis, you should use request, like the following one:
-```json
-POST /single_analyze/topics HTTP/1.1
-Host: 127.0.0.1:8080
-Content-Type: application/json
-{
-"text": ["This summary script works well for news articles and blog posts and that’s the basic motive of implementing this script. It inputs the text content, splits it into paragraphs, splits it into sentences, filter out stopwords, calculates score (relevance) of each sentence, and on the basis of the scores assigned to each sentence it displays the most relevant results depending upon how concise we want our summary to be."]
 }
 ```
