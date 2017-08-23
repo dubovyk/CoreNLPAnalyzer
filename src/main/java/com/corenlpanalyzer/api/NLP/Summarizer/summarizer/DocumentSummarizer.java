@@ -67,7 +67,6 @@ public class DocumentSummarizer {
 			List<Integer> selection) {
 		
 		StringBuilder stringBuilder = new StringBuilder(selection.size());
-		
 		for (int i=0; i<sentences.size(); i++) {
 			if (selection.contains(i)) {
 				stringBuilder.append(sentences.get(i));

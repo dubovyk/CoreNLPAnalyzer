@@ -209,6 +209,14 @@
             <td><p th:remove="tag" th:utext="${body_ner_misc}" /></td>
           </tr>
           <tr>
+            <td>Body`s summary</td>
+            <td colspan="2"><p th:text="${body_summary}" /></td>
+          </tr>
+          <tr>
+            <td>Body`s keywords</td>
+            <td colspan="2"><p th:text="${body_keywords}" /></td>
+          </tr>
+          <tr>
             <td>Body`s total sentiment coefficient</td>
             <td colspan="2"><p th:text="${body_sentiment}" /></td>
           </tr>
@@ -283,7 +291,7 @@
 
         <table th:if="${raw_text!=null}">
           <tr>
-            <th colspan="3"><b>Whole page analysis</b></th>
+            <th colspan="3"><b>Text analysis</b></th>
           </tr>
           <tr>
             <td>Page text</td>
@@ -319,6 +327,14 @@
           <tr>
             <td>Misc</td>
             <td><p th:remove="tag" th:utext="${ner_misc}" /></td>
+          </tr>
+          <tr>
+            <td>Summary</td>
+            <td colspan="2"><p th:text="${summary}" /></td>
+          </tr>
+          <tr>
+            <td>Keywords</td>
+            <td colspan="2"><p th:text="${keywords}" /></td>
           </tr>
           <tr>
             <td>Total sentiment coefficient</td>

@@ -10,7 +10,7 @@ public class Summarizer {
     private String summary;
     private String keywords;
 
-    private int SUMMARY_PERCENTAGE = 5;
+    private int SUMMARY_PERCENTAGE = 10;
 
     private DocumentSummarizer docsum;
     private KeywordExtractor keyext;
@@ -30,9 +30,6 @@ public class Summarizer {
     }
 
     public String getSummary() {
-        if (summary != null){
-            return summary;
-        }
         if (text != null){
             return docsum.summarize(text, SUMMARY_PERCENTAGE);
         }
@@ -40,11 +37,7 @@ public class Summarizer {
     }
 
     public String getKeywords(){
-        if (keywords != null){
-            return keywords;
-        } else if (summary != null){
-            return keyext.extract(summary);
-        } else if (text != null){
+        if (text != null){
             summary = docsum.summarize(text, SUMMARY_PERCENTAGE);
             return keyext.extract(summary);
         }

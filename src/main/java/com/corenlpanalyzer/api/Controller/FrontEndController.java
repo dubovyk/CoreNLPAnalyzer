@@ -50,6 +50,14 @@ public class FrontEndController {
             model.addAttribute("body_ner_location", resultPage.getBodyAnalysisResult().getNamedEntititesAsString("LOCATION"));
             model.addAttribute("body_ner_organization", resultPage.getBodyAnalysisResult().getNamedEntititesAsString("ORGANIZATION"));
             model.addAttribute("body_ner_misc", resultPage.getBodyAnalysisResult().getNamedEntititesAsString("MISC"));
+            if(resultPage.getBodyAnalysisResult().getSummaryText() != null){
+                model.addAttribute("body_summary", resultPage.getBodyAnalysisResult().getSummaryText());
+            }
+
+            if(resultPage.getBodyAnalysisResult().getKeywordsString() != null){
+                model.addAttribute("body_keywords", resultPage.getBodyAnalysisResult().getKeywordsString());
+            }
+
             if (resultPage.getBodyAnalysisResult().getTopicExtractionResult() != null && resultPage.getBodyAnalysisResult().getTopicExtractionResult().toHtmlString() != null){
                 model.addAttribute("body_topic_data", resultPage.getBodyAnalysisResult().getTopicExtractionResult().toHtmlString());
             }
@@ -118,6 +126,8 @@ public class FrontEndController {
             model.addAttribute("ner_location", resultText.getNamedEntititesAsString("LOCATION"));
             model.addAttribute("ner_organization", resultText.getNamedEntititesAsString("ORGANIZATION"));
             model.addAttribute("ner_misc", resultText.getNamedEntititesAsString("MISC"));
+            model.addAttribute("summary", resultText.getSummaryText());
+            model.addAttribute("keywords", resultText.getKeywordsString());
             if (resultText.getTopicExtractionResult() != null && resultText.getTopicExtractionResult().toHtmlString() != null){
                 model.addAttribute("topic_data", resultText.getTopicExtractionResult().toHtmlString());
             }

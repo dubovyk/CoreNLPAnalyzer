@@ -14,15 +14,11 @@ public class SummarizationServiceImpl implements ISummarizationService {
     }
 
     public String getSummary(String text){
-        if (!(summarizer.getText() != null && summarizer.getText().equals(text))){
-            summarizer.setText(text);
-        }
+        summarizer.setText(text);
         return summarizer.getSummary();
     }
     public String getKeywords(String text){
-        if (!(summarizer.getText() != null && summarizer.getText().equals(text))){
-            summarizer.setText(text);
-        }
+        summarizer.setText(text);
         return summarizer.getKeywords();
     }
 }
