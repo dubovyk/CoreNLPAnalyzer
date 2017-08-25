@@ -60,7 +60,7 @@ Content-Type: application/json
 As you can see, it takes an array of input texts and return an array of analysis results.
 
 ### Summarization
-#### ```POST /single_analysis/summary```
+#### ```POST /single_analyze/summary```
 
 You can also get just a summary and a list of keywords for given texts. To do it, you should call the ```/single_analysis/summary``` endpoint with the following format of request:
 ```json
@@ -74,7 +74,7 @@ Content-Type: application/json
 ```
 
 ### Topic extration
-#### ```POST /single_analysis/topics```
+#### ```POST /single_analyze/topics```
 
 Finally, you can get topics data of given texts or text. To do such analysis, you should use request, like the following one:
 ```json
