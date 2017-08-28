@@ -64,14 +64,6 @@
             <th colspan="3"><b>Title analysis</b></th>
           </tr>
           <tr>
-            <td>Title text</td>
-            <td colspan="2"><p th:text="${title_text}" /></td>
-          </tr>
-          <tr>
-            <td>Title`s parse tree</td>
-            <td colspan="2"><p th:text="${title_parse_tree}" /></td>
-          </tr>
-          <tr>
             <td>Title`s coreference chains</td>
             <td colspan="2"><p th:remove="tag" th:utext="${title_coref_chains}" /></td>
           </tr>
@@ -119,14 +111,6 @@
             <th colspan="3"><b>Meta data analysis</b></th>
           </tr>
           <tr>
-            <td>Meta text</td>
-            <td colspan="2"><p th:text="${meta_text}" /></td>
-          </tr>
-          <tr>
-            <td>Meta data parse tree</td>
-            <td colspan="2"><p th:text="${meta_parse_tree}" /></td>
-          </tr>
-          <tr>
             <td>Meta`s coreference chains</td>
             <td colspan="2"><p th:remove="tag" th:utext="${meta_coref_chains}" /></td>
           </tr>
@@ -172,14 +156,6 @@
         <table th:if="${body!=null}">
           <tr>
             <th colspan="3"><b>Body analysis</b></th>
-          </tr>
-          <tr>
-            <td>Body text</td>
-            <td colspan="2"><p th:text="${body_text}" /></td>
-          </tr>
-          <tr>
-            <td>Body`s parse tree</td>
-            <td colspan="2"><p th:text="${body_parse_tree}" /></td>
           </tr>
           <tr>
             <td>Body`s coreference chains</td>
@@ -241,14 +217,6 @@
             <th colspan="3"><b>Whole page analysis</b></th>
           </tr>
           <tr>
-            <td>Page text</td>
-            <td colspan="2"><p th:text="${text}" /></td>
-          </tr>
-          <tr>
-            <td>Parse tree</td>
-            <td colspan="2"><p th:text="${parse_tree}" /></td>
-          </tr>
-          <tr>
             <td>Coreference chains</td>
             <td colspan="2"><p th:remove="tag" th:utext="${coref_chains}" /></td>
           </tr>
@@ -292,14 +260,6 @@
         <table th:if="${raw_text!=null}">
           <tr>
             <th colspan="3"><b>Text analysis</b></th>
-          </tr>
-          <tr>
-            <td>Page text</td>
-            <td colspan="2"><p th:text="${text}" /></td>
-          </tr>
-          <tr>
-            <td>Parse tree</td>
-            <td colspan="2"><p th:text="${parse_tree}" /></td>
           </tr>
           <tr>
             <td>Coreference chains</td>

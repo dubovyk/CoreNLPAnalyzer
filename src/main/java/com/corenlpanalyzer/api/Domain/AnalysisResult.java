@@ -1,6 +1,7 @@
 package com.corenlpanalyzer.api.Domain;
 
 import com.corenlpanalyzer.api.NLP.Entities.TopicExtractionResult;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.stanford.nlp.coref.data.CorefChain;
 
 import java.util.ArrayList;
@@ -8,9 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class AnalysisResult{
-    private String targetText;
     private double bodyEmotionsCoefficient;
-    private String parseTree;
     private int wordCount, sentenceCount;
     private float wordsPerSentence;
     private List<CorefChain> corefChains;
@@ -18,31 +17,11 @@ public class AnalysisResult{
     private List<List<String[]>> corefChainsList;
     private TopicExtractionResult topicExtractionResult;
     private String summaryText;
-    private String keywordsString;
+    private String[] keywords;
+    private int keywordsLength;
 
     public AnalysisResult() {
-    }
-
-    public AnalysisResult(String targetText, double bodyEmotionsCoefficient) {
-        this.targetText = targetText;
-        this.bodyEmotionsCoefficient = bodyEmotionsCoefficient;
-        this.parseTree = new String ();
-    }
-
-    public String getParseTree() {
-        return parseTree;
-    }
-
-    public void appendParseTree(String parseTree) {
-        if (!parseTree.isEmpty()){
-            this.parseTree += parseTree;
-        } else {
-            this.parseTree = parseTree;
-        }
-    }
-
-    public void setParseTree(String parseTree) {
-        this.parseTree = parseTree;
+        keywordsLength = 0;
     }
 
     public Map<String, List<String>> getNERentities() {
@@ -75,14 +54,6 @@ public class AnalysisResult{
 
     public void setWordsPerSentence(float wordsPerSentence) {
         this.wordsPerSentence = wordsPerSentence;
-    }
-
-    public String getTargetText() {
-        return targetText;
-    }
-
-    public void setTargetText(String targetText) {
-        this.targetText = targetText;
     }
 
     public double getBodyEmotionsCoefficient() {
@@ -121,12 +92,29 @@ public class AnalysisResult{
         this.summaryText = summaryText;
     }
 
-    public String getKeywordsString() {
-        return keywordsString;
+    public int getKeywordsLength() {
+        return keywordsLength;
     }
 
-    public void setKeywordsString(String keywordsString) {
-        this.keywordsString = keywordsString;
+    public void setKeywordsLength(int keywordsLength) {
+        this.keywordsLength = keywordsLength;
+    }
+
+    public String[] getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(String[] keywords) {
+        for(int i = 0; i < keywords.length; i++){
+            keywords[i] = keywords[i].trim();
+        }
+        this.keywords = keywords;
+        this.keywordsLength = keywords.length;
+    }
+
+    @JsonIgnore
+    public String getKeywordsString(){
+        return String.join(",", this.keywords);
     }
 
     public String corefChainsListToString(){

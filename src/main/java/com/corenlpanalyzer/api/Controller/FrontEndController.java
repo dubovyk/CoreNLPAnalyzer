@@ -39,9 +39,8 @@ public class FrontEndController {
             model.addAttribute("title", 1);
             model.addAttribute("meta", 1);
             model.addAttribute("body", 1);
-            model.addAttribute("body_text", resultPage.getBodyAnalysisResult().getTargetText());
+            //model.addAttribute("body_text", resultPage.getBodyAnalysisResult().getTargetText());
             model.addAttribute("body_sentiment", resultPage.getBodyAnalysisResult().getBodyEmotionsCoefficient());
-            model.addAttribute("body_parse_tree", resultPage.getBodyAnalysisResult().getParseTree());
             model.addAttribute("body_sentence_num", resultPage.getBodyAnalysisResult().getSentenceCount());
             model.addAttribute("body_word_num", resultPage.getBodyAnalysisResult().getWordCount());
             model.addAttribute("body_words_sentence", resultPage.getBodyAnalysisResult().getWordsPerSentence());
@@ -63,9 +62,8 @@ public class FrontEndController {
             }
 
 
-            model.addAttribute("title_text", resultPage.getTitleAnalysisResult().getTargetText());
+            //model.addAttribute("title_text", resultPage.getTitleAnalysisResult().getTargetText());
             model.addAttribute("title_sentiment", resultPage.getTitleAnalysisResult().getBodyEmotionsCoefficient());
-            model.addAttribute("title_parse_tree", resultPage.getTitleAnalysisResult().getParseTree());
             model.addAttribute("title_sentence_num", resultPage.getTitleAnalysisResult().getSentenceCount());
             model.addAttribute("title_word_num", resultPage.getTitleAnalysisResult().getWordCount());
             model.addAttribute("title_words_sentence", resultPage.getTitleAnalysisResult().getWordsPerSentence());
@@ -75,9 +73,8 @@ public class FrontEndController {
             model.addAttribute("title_ner_organization", resultPage.getTitleAnalysisResult().getNamedEntititesAsString("ORGANIZATION"));
             model.addAttribute("title_ner_misc", resultPage.getTitleAnalysisResult().getNamedEntititesAsString("MISC"));
 
-            model.addAttribute("meta_text", resultPage.getMetaAnalysisResult().getTargetText());
+            //model.addAttribute("meta_text", resultPage.getMetaAnalysisResult().getTargetText());
             model.addAttribute("meta_sentiment", resultPage.getMetaAnalysisResult().getBodyEmotionsCoefficient());
-            model.addAttribute("meta_parse_tree", resultPage.getMetaAnalysisResult().getParseTree());
             model.addAttribute("meta_sentence_num", resultPage.getMetaAnalysisResult().getSentenceCount());
             model.addAttribute("meta_word_num", resultPage.getMetaAnalysisResult().getWordCount());
             model.addAttribute("meta_words_sentence", resultPage.getMetaAnalysisResult().getWordsPerSentence());
@@ -87,9 +84,8 @@ public class FrontEndController {
             model.addAttribute("meta_ner_organization", resultPage.getMetaAnalysisResult().getNamedEntititesAsString("ORGANIZATION"));
             model.addAttribute("meta_ner_misc", resultPage.getMetaAnalysisResult().getNamedEntititesAsString("MISC"));
 
-            model.addAttribute("text", resultPage.getWholePageAnalysisResult().getTargetText());
+            //model.addAttribute("text", resultPage.getWholePageAnalysisResult().getTargetText());
             model.addAttribute("sentiment", resultPage.getWholePageAnalysisResult().getBodyEmotionsCoefficient());
-            model.addAttribute("parse_tree", resultPage.getWholePageAnalysisResult().getParseTree());
             model.addAttribute("sentence_num", resultPage.getWholePageAnalysisResult().getSentenceCount());
             model.addAttribute("word_num", resultPage.getWholePageAnalysisResult().getWordCount());
             model.addAttribute("words_sentence", resultPage.getWholePageAnalysisResult().getWordsPerSentence());
@@ -115,9 +111,8 @@ public class FrontEndController {
             resultText = analyzer.getResult();
             model.addAttribute("raw_text", 1);
             model.addAttribute("visible", "visibility: visible;");
-            model.addAttribute("text", resultText.getTargetText());
+            //model.addAttribute("text", resultText.getTargetText());
             model.addAttribute("sentiment", resultText.getBodyEmotionsCoefficient());
-            model.addAttribute("parse_tree", resultText.getParseTree());
             model.addAttribute("sentence_num", resultText.getSentenceCount());
             model.addAttribute("word_num", resultText.getWordCount());
             model.addAttribute("words_sentence", resultText.getWordsPerSentence());
