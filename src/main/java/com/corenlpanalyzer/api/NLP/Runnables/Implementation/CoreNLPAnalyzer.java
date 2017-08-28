@@ -95,15 +95,21 @@ public class CoreNLPAnalyzer implements ICoreNLPAnalyzer{
         int sentences_num = 0;
         int total_sentiment = 0;
 
-        Map<String, List<String>> NERtags = new HashMap<>();
+        Map<String, List<String>> NERtags = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
         NERtags.put("PERSON", new ArrayList<>());
         NERtags.put("LOCATION", new ArrayList<>());
         NERtags.put("ORGANIZATION", new ArrayList<>());
+        NERtags.put("DURATION", new ArrayList<>());
+        NERtags.put("NUMBER", new ArrayList<>());
+        NERtags.put("ORDINAL", new ArrayList<>());
+        NERtags.put("PERSON", new ArrayList<>());
         NERtags.put("MISC", new ArrayList<>());
+        NERtags.put("TIME", new ArrayList<>());
+        NERtags.put("DATE", new ArrayList<>());
 
         result = new AnalysisResult();
-        result.setTargetText(rawText);
+
 
         Annotation doc = new Annotation(rawText);
 
@@ -118,20 +124,21 @@ public class CoreNLPAnalyzer implements ICoreNLPAnalyzer{
         StringBuffer ner;
 
         for (CoreMap sentence : sentences){
-            Tree tree = sentence.get(TreeCoreAnnotations.TreeAnnotation.class);
-            result.appendParseTree(tree.toString().replace("null", ""));
             Sentence s = new Sentence(sentence);
             words += s.length();
             sentences_num += 1;
             total_sentiment += getTypeOfEmotion(sentence.get(SentimentCoreAnnotations.SentimentClass.class)).getValue();
             ner = new StringBuffer();
 
-
             for (CoreLabel token : sentence.get(CoreAnnotations.TokensAnnotation.class)){
                 if ((token.value() != null)
                         && (token.get(CoreAnnotations.NamedEntityTagAnnotation.class) != null)){
-                    if (!token.get(CoreAnnotations.NamedEntityTagAnnotation.class).equals("O")){
-                        NERtags.computeIfAbsent(token.get(CoreAnnotations.NamedEntityTagAnnotation.class), k -> new ArrayList<>());
+
+                    // uncomment it if we need all classes of NER. Now it will work jus with those,
+                    // which are present it NERtags map as keys.
+                    /*if (!token.get(CoreAnnotations.NamedEntityTagAnnotation.class).equals("O")){
+                        NERtags.computeIfAbsent(token.get(CoreAnnotations.NamedEntityTagAnnotation.class), k -> new ArrayList<>());*/
+                    if (NERtags.keySet().contains(token.get(CoreAnnotations.NamedEntityTagAnnotation.class))){
 
                         if (!NERtags.get(token.get(CoreAnnotations.NamedEntityTagAnnotation.class)).contains(token.value())){
                             if (nerClass.equals(token.get(CoreAnnotations.NamedEntityTagAnnotation.class))){
@@ -176,10 +183,10 @@ public class CoreNLPAnalyzer implements ICoreNLPAnalyzer{
         if (this.useSummarizer){
             try {
                 result.setSummaryText(summarizationService.getSummary(rawText));
-                result.setKeywordsString(summarizationService.getKeywords(rawText));
+                result.setKeywords(summarizationService.getKeywords(rawText).split(","));
             } catch (Exception ex){
                 result.setSummaryText(null);
-                result.setKeywordsString(null);
+                result.setKeywords(new String[]{});
             }
         }
 
